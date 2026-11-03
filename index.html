@@ -110,6 +110,11 @@ button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
   #eventSheet img{max-width:280px;margin:0 auto}
 }
 
+.tentkey{position:fixed;z-index:4;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font:600 13px var(--body);pointer-events:none}
+.tentkey div{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.tentkey svg{width:30px;height:24px;flex:none}
+@media (max-width:980px){.tentkey{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+@media (max-width:640px){.tentkey{flex-direction:row;gap:12px;padding:7px 10px;font-size:12px;bottom:calc(122px + env(safe-area-inset-bottom,0px))}.tentkey svg{width:24px;height:20px}}
 @media (max-width:640px){.hint{display:none}.bar .sep{display:none}button{padding:7px 9px;font-size:12px}}
 </style>
 
@@ -184,6 +189,10 @@ button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
   </div>
 </div>
 <div id="loading">กำลังโหลดฉาก…</div>
+<div class="tentkey" aria-label="ความหมายสีเต็นท์">
+  <div><svg viewBox="0 0 32 26" aria-hidden="true"><path d="M2 12 16 2l14 10z" fill="#f2eee6" stroke="rgba(0,0,0,.35)" stroke-width="1"/><path d="M4 12v12M28 12v12" stroke="#cfd3da" stroke-width="2"/><rect x="7" y="17" width="18" height="3" rx="1" fill="#8a8f99"/></svg>เต็นท์สีขาว · ว่าง จองได้</div>
+  <div><svg viewBox="0 0 32 26" aria-hidden="true"><path d="M2 12 16 2l14 10z" fill="#ff3d73" stroke="rgba(0,0,0,.35)" stroke-width="1"/><path d="M4 12v12M28 12v12" stroke="#cfd3da" stroke-width="2"/><rect x="7" y="17" width="18" height="3" rx="1" fill="#8a8f99"/></svg>เต็นท์สีชมพู · จองแล้ว</div>
+</div>
 <div class="dock"><div class="bar" role="toolbar" aria-label="มุมกล้อง">
   <button id="v-over" data-view="over" aria-pressed="true">ภาพรวม</button>
   <button id="v-shrine" data-view="shrine">มองไปศาลเจ้า</button>
