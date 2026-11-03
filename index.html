@@ -96,6 +96,23 @@ button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
 .facts dd{margin:0;font-weight:600}
 .artists{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 16px}
 .artists span{font-size:12px;padding:4px 9px;border-radius:999px;background:rgba(255,63,164,.12);border:1px solid rgba(255,63,164,.35)}
+
+#boothSheet{box-sizing:border-box;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%);width:min(420px,calc(100% - 32px))!important;max-height:calc(100dvh - 32px);overflow:auto;border-radius:20px!important;padding:22px!important}
+#boothSheet h2{font-size:38px!important}
+.bookedBanner{margin-top:14px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,#ff3d73,#c2185b);color:#fff;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(255,61,115,.35)}
+.bookedBanner svg{width:34px;height:34px;flex:none}
+.bookedBanner b{display:block;font:500 22px var(--display);line-height:1.2}
+.bookedBanner span{font-size:14px;opacity:.92}
+#boothSheet.isBooked .price{opacity:.55}
+.price .amt{font-size:34px!important}
+.perks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.perk{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.06)}
+.perk svg{width:30px;height:30px;flex:none;color:#ffd48f}
+.perk b{display:block;font-size:17px;line-height:1.2;color:#fff}
+.perk span{font-size:12px;color:var(--muted)}
+.cbtn{font-size:16px!important;padding:13px 12px!important}
+#boothSheet .contact .lbl{font-size:15px}
+@media (max-width:640px){#boothSheet{width:calc(100% - 28px)!important;padding:18px!important}#boothSheet h2{font-size:32px!important}.perk{padding:9px 8px;gap:8px}.perk b{font-size:15px;white-space:nowrap}.perk svg{width:26px;height:26px}.price .amt{font-size:30px!important}}
 .scrim{position:fixed;inset:0;background:rgba(3,4,10,.6);z-index:19}
 .scrim[hidden]{display:none}
 @media (max-width:640px){
@@ -139,6 +156,7 @@ button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
   <button class="close" id="closeBooth" aria-label="ปิด">×</button>
   <h2 id="bId">–</h2>
   <div class="zone" id="bZone"></div>
+  <div class="bookedBanner" id="bBanner" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><div><b>ล็อกนี้มีคนจองแล้ว</b><span id="bBannerShop">เลือกล็อกอื่นที่ยังว่างได้เลย</span></div></div>
   <div class="price" id="bPrice"></div>
   <div class="badge" id="bBadge"></div>
   <div class="shop" id="bShop"></div>
@@ -726,21 +744,23 @@ function fillSheet(id){const b=BOOTH[id];
   $('bId').textContent=id;$('bZone').textContent=b.zone;
   $('bBadge').className='badge '+b.status;$('bBadge').innerHTML='';
   const d=document.createElement('i');d.className='dot '+b.status;$('bBadge').append(d,document.createTextNode(b.status==='booked'?'จองแล้ว':'ว่าง พร้อมให้จอง'));
-  $('bShop').textContent=b.status==='booked'&&b.shop?('ร้าน: '+b.shop):'';
+  $('bShop').textContent='';const bk=b.status==='booked';$('boothSheet').classList.toggle('isBooked',bk);$('bBanner').hidden=!bk;$('bBadge').hidden=bk;
+  $('bBannerShop').textContent=bk&&b.shop?('ร้าน '+b.shop+' · เลือกล็อกอื่นที่ยังว่างได้เลย'):'เลือกล็อกอื่นที่ยังว่างได้เลย';
   {const P=$('bPrice');P.innerHTML='';const c=document.createElement('div');c.className='cat';const sw=document.createElement('i');sw.className='sw';sw.style.background=b.cat.col;c.append(sw,document.createTextNode(b.cat.name));
    const a=document.createElement('div');a.className='amt';a.textContent=b.cat.price.toLocaleString('th-TH')+' บาท ';const sm=document.createElement('small');sm.textContent='/ 3 วัน (13–15 พ.ย.)';a.append(sm);
-   const sp=document.createElement('div');sp.className='spec';sp.textContent='ขนาดร้าน 2×2 เมตร · มีโต๊ะให้ 1.5 เมตร';P.append(c,a,sp)}
+   const sp=document.createElement('div');sp.className='perks';sp.innerHTML=PERKS;P.append(c,a,sp)}
   $('bContactLbl').textContent=b.status==='booked'?'ล็อกนี้เต็มแล้ว สนใจล็อกอื่น ติดต่อได้ที่':'สนใจจองล็อกนี้ ติดต่อได้ที่';
 }
 const draft={status:'free'};
 function setSeg(){document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.st===draft.status))}
 
+const PERKS='<div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 9h2M4 14h2M9 4v2M14 4v2"/></svg><div><b>2×2 เมตร</b><span>พื้นที่ร้าน</span></div></div><div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h20M5 8v12M19 8v12M5 13h14"/></svg><div><b>โต๊ะ 1.5 ม.</b><span>มีให้ทุกล็อก</span></div></div><div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><div><b>13–15 พ.ย.</b><span>ขาย 3 วัน</span></div></div><div class="perk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div><b>16:00–20:00</b><span>ทุกวัน</span></div></div>';
 function openBooth(id,fly){
   if(selected){BOOTH[selected].sel=false;paint(selected)}
-  selected=id;BOOTH[id].sel=true;paint(id);fillSheet(id);$('boothSheet').hidden=false;
+  selected=id;BOOTH[id].sel=true;paint(id);fillSheet(id);$('boothSheet').hidden=false;$('scrim').hidden=false;
   if(fly){const b=BOOTH[id];VIEWS.__b={p:[b.x+(b.x<4?7:-7),10,b.z+11],t:[b.x,1.5,b.z]};go('__b')}
 }
-function closeBooth(){if(selected){BOOTH[selected].sel=false;paint(selected)}selected=null;$('boothSheet').hidden=true}
+function closeBooth(){if(selected){BOOTH[selected].sel=false;paint(selected)}selected=null;$('boothSheet').hidden=true;if($('eventSheet').hidden)$('scrim').hidden=true}
 $('closeBooth').onclick=closeBooth;
 
 
@@ -748,8 +768,8 @@ $('closeBooth').onclick=closeBooth;
 const tlist=$('t-list');
 tlist.onclick=()=>{const open=$('listSheet').hidden;$('listSheet').hidden=!open;tlist.setAttribute('aria-pressed',open)};
 // event sheet
-function setEvent(open){$('eventSheet').hidden=!open;$('scrim').hidden=!open;if(open)$('closeEvent').focus()}
-$('openEvent').onclick=()=>setEvent(true);$('closeEvent').onclick=()=>setEvent(false);$('scrim').onclick=()=>setEvent(false);
+function setEvent(open){if(open)closeBooth();$('eventSheet').hidden=!open;$('scrim').hidden=!open;if(open)$('closeEvent').focus()}
+$('openEvent').onclick=()=>setEvent(true);$('closeEvent').onclick=()=>setEvent(false);$('scrim').onclick=()=>{setEvent(false);closeBooth()};
 addEventListener('keydown',e=>{if(e.key==='Escape'){setEvent(false);closeBooth()}});
 
 // click a tag in 3D (ignore drags)
