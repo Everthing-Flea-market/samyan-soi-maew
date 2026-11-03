@@ -26,6 +26,30 @@ button:hover{background:rgba(255,198,110,.1)}
 button[aria-pressed="true"]{background:rgba(255,198,110,.16);border-color:rgba(255,198,110,.45);color:#ffe2b0}
 button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
 #loading{position:fixed;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;pointer-events:none}
+#loading{z-index:30;background:var(--ink)}
+.ld{display:grid;justify-items:center;gap:10px;color:var(--fg);font:600 15px var(--body)}
+.ldcat{width:120px;height:80px;animation:ldbob .5s ease-in-out infinite}
+.ldcat .l1{transform-box:fill-box;transform-origin:50% 0;animation:ldleg .5s ease-in-out infinite}
+.ldcat .l2{transform-box:fill-box;transform-origin:50% 0;animation:ldleg .5s ease-in-out infinite reverse}
+.ldcat .tail{transform-origin:22px 42px;animation:ldtail 1s ease-in-out infinite}
+.ldtrack{width:160px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,#ff4fae,transparent);background-size:60px 3px;animation:ldtrack .9s linear infinite reverse}
+@keyframes ldleg{0%,100%{transform:rotate(22deg)}50%{transform:rotate(-22deg)}}
+@keyframes ldbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes ldtail{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+@keyframes ldtrack{from{background-position:0 0}to{background-position:60px 0}}
+@media (prefers-reduced-motion: reduce){.ldcat,.ldcat *,.ldtrack{animation:none!important}}
+.fxwrap{position:relative}
+#fxPanel{position:absolute;bottom:calc(100% + 10px);right:0;min-width:200px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#fxPanel[hidden]{display:none}
+#fxPanel label{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px 10px;border-radius:9px;font:600 14px var(--body);cursor:pointer}
+#fxPanel label:hover{background:rgba(255,198,110,.08)}
+#fxPanel input{appearance:none;width:38px;height:22px;border-radius:999px;background:#3a3d4a;position:relative;cursor:pointer;flex:none;transition:background .15s}
+#fxPanel input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+#fxPanel input:checked{background:#ff4fae}
+#fxPanel input:checked::after{transform:translateX(16px)}
+#fxPanel input:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
+@media (max-width:640px){#fxPanel{position:fixed;left:16px;right:16px;bottom:calc(128px + env(safe-area-inset-bottom,0px));min-width:0}}
+
 .hint{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:calc(16px + env(safe-area-inset-top,0px));font-size:12px;color:var(--muted);text-align:right;pointer-events:none}
 
 /* ---- booth booking + event info ---- */
@@ -130,7 +154,7 @@ button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
 .tentkey{position:fixed;z-index:4;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font:600 13px var(--body);pointer-events:none}
 .tentkey div{display:flex;align-items:center;gap:8px;white-space:nowrap}
 .tentkey svg{width:30px;height:24px;flex:none}
-@media (max-width:980px){.tentkey{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+@media (max-width:1240px){.tentkey{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
 @media (max-width:640px){.tentkey{flex-direction:row;gap:12px;padding:7px 10px;font-size:12px;bottom:calc(122px + env(safe-area-inset-bottom,0px))}.tentkey svg{width:24px;height:20px}}
 @media (max-width:640px){.hint{display:none}.bar .sep{display:none}button{padding:7px 9px;font-size:12px}}
 </style>
@@ -206,7 +230,16 @@ button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
     <div style="font-size:12px;color:var(--muted)">ร่วมจัดโดย PMCU · HYPE · NUK NUK BBK · HYPE DISTRICT</div>
   </div>
 </div>
-<div id="loading">กำลังโหลดฉาก…</div>
+<div id="loading" role="status" aria-live="polite"><div class="ld">
+  <svg class="ldcat" viewBox="0 0 120 80" aria-hidden="true">
+    <path class="tail" d="M22 42 Q6 34 10 14" fill="none" stroke="#ff4fae" stroke-width="6" stroke-linecap="round"/>
+    <g class="legs" fill="#ff4fae"><rect class="l1" x="34" y="48" width="8" height="20" rx="4"/><rect class="l2" x="46" y="48" width="8" height="20" rx="4"/><rect class="l1" x="66" y="48" width="8" height="20" rx="4"/><rect class="l2" x="78" y="48" width="8" height="20" rx="4"/></g>
+    <ellipse cx="58" cy="44" rx="34" ry="15" fill="#ff4fae"/>
+    <g class="head"><path d="M84 24 L88 6 L97 20 Z M104 20 L112 6 L114 24 Z" fill="#ff4fae"/><circle cx="100" cy="30" r="15" fill="#ff4fae"/>
+      <circle cx="95" cy="28" r="2.6" fill="#ffe14d"/><circle cx="106" cy="28" r="2.6" fill="#ffe14d"/></g>
+  </svg>
+  <div class="ldtrack"></div>
+  <div>กำลังโหลดฉาก…</div></div></div>
 <div class="tentkey" aria-label="ความหมายสีเต็นท์">
   <div><svg viewBox="0 0 32 26" aria-hidden="true"><path d="M2 12 16 2l14 10z" fill="#f2eee6" stroke="rgba(0,0,0,.35)" stroke-width="1"/><path d="M4 12v12M28 12v12" stroke="#cfd3da" stroke-width="2"/><rect x="7" y="17" width="18" height="3" rx="1" fill="#8a8f99"/></svg>เต็นท์สีขาว · ว่าง จองได้</div>
   <div><svg viewBox="0 0 32 26" aria-hidden="true"><path d="M2 12 16 2l14 10z" fill="#ff3d73" stroke="rgba(0,0,0,.35)" stroke-width="1"/><path d="M4 12v12M28 12v12" stroke="#cfd3da" stroke-width="2"/><rect x="7" y="17" width="18" height="3" rx="1" fill="#8a8f99"/></svg>เต็นท์สีชมพู · จองแล้ว</div>
@@ -220,6 +253,12 @@ button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
   <button id="t-list" aria-pressed="false">ล็อกทั้งหมด</button>
   <button id="t-labels" aria-pressed="false">ป้ายโซน</button>
   <button id="t-spin" aria-pressed="false">หมุนอัตโนมัติ</button>
+  <span class="fxwrap"><button id="t-fx" aria-expanded="false" aria-controls="fxPanel">เอฟเฟค</button>
+    <div id="fxPanel" hidden>
+      <label>จอฉายแมวเดิน + ลำแสง<input type="checkbox" data-fx="screen" checked></label>
+      <label>ควันสีน้ำเงิน<input type="checkbox" data-fx="smoke" checked></label>
+      <label>คนเดินในงาน<input type="checkbox" data-fx="people" checked></label>
+    </div></span>
 </div></div>
 
 <script type="importmap">
@@ -649,7 +688,7 @@ addEventListener('resize',resize);resize();
 const VIEWS={
   over:{p:[-6,36,-58],t:[7,0,-4]},
   shrine:{p:[4.6,1.7,-21],t:[6.3,3.4,12]},
-  dj:{p:[6.5,2,2.4],t:[3.5,2.4,-34]},
+  dj:{p:[3.7,2.2,-27],t:[3,1.1,-33.5]},
   top:{p:[6,78,-8],t:[6,0,-10.5]},
 };
 let tween=null;
@@ -813,7 +852,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLive()
   const hairG=new THREE.SphereGeometry(.125,10,6,0,Math.PI*2,0,Math.PI*.55);
   const legG=new THREE.CylinderGeometry(.065,.055,.8,6);legG.translate(0,-.4,0);
   const armG=new THREE.CylinderGeometry(.045,.04,.58,6);armG.translate(0,-.29,0);
-  const crowd=new THREE.Group();world.add(crowd);
+  const crowd=new THREE.Group();world.add(crowd);(window.__FX=window.__FX||{}).people=[crowd];
   const walkers=[];
   function person(){
     const g=new THREE.Group(),s=.92+rnd()*.16;g.scale.setScalar(s);
@@ -838,6 +877,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLive()
   const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let last=performance.now();
   function step(now){
+    if(!crowd.visible){last=now;requestAnimationFrame(step);return}
     const dt=Math.min(.05,(now-last)/1000);last=now;
     walkers.forEach(w=>{
       if(!still){
@@ -864,68 +904,138 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLive()
 }
 
 // ===================================================================
-// LIGHTWEIGHT FX: projection mapping on the café + dusty beam, blue smoke over the DJ end
-// (no extra lights: everything is unlit, additive, one draw call each)
+// LIGHTWEIGHT FX: corner projection on the café (cats walking round the corner),
+// dusty beam, blue smoke over the DJ end. No extra lights; one small canvas redraw.
 // ===================================================================
 {
   const T0=performance.now();
   const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // --- projected animation: 24-frame atlas (4x6) on the café upper facade
-  const atlas=new THREE.TextureLoader().load('img/mapping.jpg');atlas.colorSpace=THREE.SRGBColorSpace;
-  atlas.minFilter=THREE.LinearFilter;atlas.generateMipmaps=false;
-  const mapMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,fog:false,uniforms:{map:{value:atlas},off:{value:new THREE.Vector2()}},
-    vertexShader:'varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-    fragmentShader:'uniform sampler2D map;uniform vec2 off;varying vec2 vU;void main(){vec3 c=texture2D(map,off+vU*vec2(.25,1./6.)).rgb;float l=max(c.r,max(c.g,c.b));float a=smoothstep(.04,.28,l);gl_FragColor=vec4(c*1.7,a);}'});
-  const glowMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false,uniforms:mapMat.uniforms,
-    vertexShader:mapMat.vertexShader,
-    fragmentShader:'uniform sampler2D map;uniform vec2 off;varying vec2 vU;void main(){vec3 c=vec3(0.);for(int i=-2;i<=2;i++)for(int j=-2;j<=2;j++){c+=texture2D(map,off+clamp(vU+vec2(float(i)*.012,float(j)*.03),0.,1.)*vec2(.25,1./6.)).rgb;}gl_FragColor=vec4(c/25.*.9,1.);}'});
-  const screen=new THREE.Mesh(new THREE.PlaneGeometry(8.4,3.0),mapMat);
-  screen.position.set(-1.52,5.1,-5.9);screen.rotation.y=Math.PI/2;world.add(screen);
-  const glow=new THREE.Mesh(new THREE.PlaneGeometry(9.4,3.8),glowMat);glow.position.set(-1.5,5.1,-5.9);glow.rotation.y=Math.PI/2;world.add(glow);
-  // --- light beam from the rooftop projector across the soi
+  // ---- the unwrapped wall: soi face (6 m) + alley face (8 m), 100 px per metre
+  const PX=100,WB=6,WA=8,W=(WB+WA)*PX,H=300,CORNER=WB*PX;
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.minFilter=THREE.LinearFilter;tex.generateMipmaps=false;
+  const WINDOWS=[[110,48,470,150],[650,48,420,150],[1200,62,190,128]];   // left,top,w,h — real window openings stay clear
+  const PINK='#ff2f9e',YEL='#ffb81c',ORG='#ff6a14',TEAL='#10b8a2';
+  function rr(x,y,w,h,r){g.beginPath();g.roundRect(x,y,w,h,r)}
+  function background(t){
+    g.clearRect(0,0,W,H);
+    g.fillStyle=YEL;g.fillRect(0,0,W,H);
+    // pink ceiling band with fine stripes
+    g.fillStyle=PINK;g.fillRect(0,0,W,46);
+    g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=2;for(let x=0;x<W;x+=26){g.beginPath();g.moveTo(x,0);g.lineTo(x+14,46);g.stroke()}
+    // orange container-stripe floor band
+    g.fillStyle=ORG;g.fillRect(0,206,W,94);
+    g.fillStyle='rgba(120,40,0,.22)';for(let x=0;x<W;x+=18)g.fillRect(x,206,5,94);
+    g.fillStyle='#fff3';g.fillRect(0,206,W,4);
+    // teal end + corner panels
+    g.fillStyle=TEAL;g.fillRect(0,0,60,H);g.fillRect(CORNER-22,0,44,H);g.fillRect(W-40,0,40,H);
+    // bunting under the ceiling, gently swaying
+    for(let x=80;x<W-60;x+=46){const k=Math.sin(t*1.5+x*.05)*2;g.fillStyle=['#6b4fe0','#ffffff','#2ab0ff'][(x/46|0)%3];
+      g.beginPath();g.moveTo(x,50);g.lineTo(x+30,50);g.lineTo(x+15,72+k);g.closePath();g.fill()}
+    // glowing string lights that twinkle
+    for(let x=70;x<W-50;x+=58){const on=.55+.45*Math.sin(t*3+x);const gr=g.createRadialGradient(x,92,0,x,92,16);
+      gr.addColorStop(0,`rgba(255,240,190,${on})`);gr.addColorStop(1,'rgba(255,240,190,0)');g.fillStyle=gr;g.fillRect(x-16,76,32,32)}
+    // window openings: punch them out so the real glass shows
+    g.save();g.globalCompositeOperation='destination-out';WINDOWS.forEach(([x,y,w,h])=>{rr(x,y,w,h,6);g.fill()});g.restore();
+    g.strokeStyle='#ffffffcc';g.lineWidth=5;WINDOWS.forEach(([x,y,w,h])=>{rr(x,y,w,h,6);g.stroke()});
+  }
+  // ---- cats
+  const CATS=[{fur:'#f4f1ea',ear:'#ffb3c7',eye:'#5ab0ff',spots:'#c9b49b'},{fur:'#1b1b22',ear:'#ff8fb0',eye:'#ffd23c'},
+    {fur:'#e9d3b3',ear:'#7a5a44',eye:'#4aa3ff',mask:'#5a3e2e'},{fur:'#ff9a3c',ear:'#ffc0a0',eye:'#7ad35a',stripes:'#d86a1a'},
+    {fur:'#9aa0a8',ear:'#ffc0d0',eye:'#ffd23c',stripes:'#6c727a'}].map((c,i)=>({...c,x:i*W/5+rnd()*80,speed:38+rnd()*26,dir:i%2?-1:1,ph:rnd()*6,s:1.15+rnd()*.25,sit:0}));
+  function cat(c,t){
+    const s=c.s,y=268,step=c.sit>0?0:Math.sin(t*c.speed*.22+c.ph);
+    g.save();g.translate(c.x,y);g.scale(c.dir*s,s);
+    const F=c.fur;g.lineJoin='round';g.strokeStyle='#1a1a1a';g.lineWidth=3.5;
+    // tail
+    g.beginPath();g.moveTo(-34,-20);g.quadraticCurveTo(-60,-30+Math.sin(t*4+c.ph)*8,-52,-62);g.lineWidth=7;g.strokeStyle='#1a1a1a';g.stroke();g.lineWidth=5;g.strokeStyle=F;g.stroke();
+    g.lineWidth=2.5;g.strokeStyle='#1a1a1a';
+    // legs (alternate swing)
+    [[-24,step],[-12,-step],[16,-step],[28,step]].forEach(([lx,k])=>{g.fillStyle=F;rr(lx-5+k*4,-16,11,18,5);g.fill();g.stroke()});
+    // body
+    g.fillStyle=F;g.beginPath();g.ellipse(0,-28,40,21,0,0,7);g.fill();g.stroke();
+    if(c.stripes){g.strokeStyle=c.stripes;g.lineWidth=4;for(let k=-20;k<=20;k+=12){g.beginPath();g.moveTo(k,-42);g.lineTo(k-4,-30);g.stroke()}g.strokeStyle='#1a1a1a';g.lineWidth=2.5}
+    if(c.spots){g.fillStyle=c.spots;g.beginPath();g.ellipse(-8,-30,9,6,0,0,7);g.fill()}
+    // head bobbing
+    const hy=-50+(c.sit>0?0:Math.abs(step)*2);
+    g.fillStyle=F;
+    [[-14,1],[14,-1]].forEach(([ex,d])=>{g.beginPath();g.moveTo(34+ex*.9,hy-10);g.lineTo(34+ex*.5-d*2,hy-38);g.lineTo(34+ex*.1,hy-16);g.closePath();g.fill();g.stroke();
+      g.fillStyle=c.ear;g.beginPath();g.moveTo(34+ex*.75,hy-14);g.lineTo(34+ex*.5-d*2,hy-31);g.lineTo(34+ex*.25,hy-17);g.fill();g.fillStyle=F});
+    g.beginPath();g.ellipse(34,hy,22,19,0,0,7);g.fill();g.stroke();
+    if(c.mask){g.fillStyle=c.mask;g.beginPath();g.ellipse(36,hy+5,12,9,0,0,7);g.fill()}
+    const blink=(Math.sin(t*.9+c.ph*3)>.97)?.15:1;
+    [[27,c.eye],[43,c.eye]].forEach(([ex,col])=>{g.fillStyle=col;g.beginPath();g.ellipse(ex,hy-2,4.6,5.5*blink,0,0,7);g.fill();
+      g.fillStyle='#111';g.beginPath();g.ellipse(ex+1,hy-2,1.6,4*blink,0,0,7);g.fill()});
+    g.fillStyle='#ff7aa8';g.beginPath();g.moveTo(33,hy+6);g.lineTo(39,hy+6);g.lineTo(36,hy+10);g.fill();
+    g.restore();
+  }
+  function draw(t,dt){
+    background(t);
+    CATS.forEach(c=>{
+      if(!still){
+        if(c.sit>0)c.sit-=dt;else{c.x+=c.dir*c.speed*dt;if(rnd()<dt*.05)c.sit=1.5+rnd()*2.5}
+        if(c.x>W+80)c.x=-80;if(c.x<-80)c.x=W+80;
+      }
+      cat(c,t);
+    });
+    tex.needsUpdate=true;
+  }
+  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false,fog:false,color:new THREE.Color(1.08,1.08,1.08)});
+  function face(wm,u0,u1){const ge=new THREE.PlaneGeometry(wm,3.0);const uv=ge.attributes.uv;
+    for(let i=0;i<uv.count;i++)uv.setX(i,u0+uv.getX(i)*(u1-u0));uv.needsUpdate=true;return new THREE.Mesh(ge,mat)}
+  const faceB=face(WB,0,CORNER/W);faceB.position.set(-1.6-WB/2,5.1,0.07);world.add(faceB);              // soi face
+  const faceA=face(WA,CORNER/W,1);faceA.position.set(-1.52,5.1,-WA/2);faceA.rotation.y=Math.PI/2;world.add(faceA); // alley face
+  // ---- light beam from the rooftop projector onto the alley face
   const LENS=new THREE.Vector3(13.4,10.1,-5.6);
-  const corners=[[-1.5,3.6,-1.7],[-1.5,3.6,-10.1],[-1.5,6.6,-10.1],[-1.5,6.6,-1.7]].map(a=>new THREE.Vector3(...a));
-  const bg=new THREE.BufferGeometry();const pos=[],uv=[],idx=[];
-  corners.forEach(c=>{pos.push(LENS.x,LENS.y,LENS.z, c.x,c.y,c.z);uv.push(0,0,1,0)});
-  for(let i=0;i<4;i++){const a=i*2,b=((i+1)%4)*2;idx.push(a,a+1,b+1, a,b+1,b)}
-  bg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));bg.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));bg.setIndex(idx);
-  const beamMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false,
-    uniforms:{t:{value:0}},
+  const corners=[[-1.5,3.6,0],[-1.5,3.6,-8],[-1.5,6.6,-8],[-1.5,6.6,0]].map(a=>new THREE.Vector3(...a));
+  const bg=new THREE.BufferGeometry();const pos=[],uvs=[],idx=[];
+  corners.forEach(c=>{pos.push(LENS.x,LENS.y,LENS.z,c.x,c.y,c.z);uvs.push(0,0,1,0)});
+  for(let i=0;i<4;i++){const a=i*2,b=((i+1)%4)*2;idx.push(a,a+1,b+1,a,b+1,b)}
+  bg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));bg.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));bg.setIndex(idx);
+  const beamMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false,uniforms:{t:{value:0}},
     vertexShader:'varying vec2 vU;varying vec3 vP;void main(){vU=uv;vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-    fragmentShader:'uniform float t;varying vec2 vU;varying vec3 vP;void main(){float a=.11*(1.-vU.x*.55)*(.75+.25*sin(vP.y*3.+vP.z*2.+t*.8));gl_FragColor=vec4(vec3(.75,.7,1.)*a,1.);}'});
-  world.add(new THREE.Mesh(bg,beamMat));
-  // dust motes drifting inside the beam (one Points draw, moved in the shader)
-  const N=260,dp=[],ds=[];
-  for(let i=0;i<N;i++){const k=Math.sqrt(rnd()),c0=corners[0],c2=corners[2];
-    const tgt=new THREE.Vector3(c0.x,c0.y+(c2.y-c0.y)*rnd(),c0.z+(c2.z-c0.z)*rnd());
-    const p=LENS.clone().lerp(tgt,.08+k*.9);dp.push(p.x,p.y,p.z);ds.push(rnd()*6.28)}
+    fragmentShader:'uniform float t;varying vec2 vU;varying vec3 vP;void main(){float a=.09*(1.-vU.x*.55)*(.75+.25*sin(vP.y*3.+vP.z*2.+t*.8));gl_FragColor=vec4(vec3(1.,.8,.95)*a,1.);}'});
+  const beam=new THREE.Mesh(bg,beamMat);world.add(beam);
+  const N=220,dp=[],ds=[];
+  for(let i=0;i<N;i++){const k=Math.sqrt(rnd());const tg=new THREE.Vector3(-1.5,3.6+3*rnd(),-8*rnd());const p=LENS.clone().lerp(tg,.08+k*.9);dp.push(p.x,p.y,p.z);ds.push(rnd()*6.28)}
   const dg=new THREE.BufferGeometry();dg.setAttribute('position',new THREE.Float32BufferAttribute(dp,3));dg.setAttribute('seed',new THREE.Float32BufferAttribute(ds,1));
   const dustMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,fog:false,uniforms:{t:{value:0}},
     vertexShader:'attribute float seed;uniform float t;varying float vA;void main(){vec3 p=position+vec3(sin(t*.3+seed)*.12,sin(t*.23+seed*2.)*.15,cos(t*.27+seed)*.12);vA=.5+.5*sin(t*1.3+seed*3.);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=clamp(28./-mv.z,1.,5.);gl_Position=projectionMatrix*mv;}',
     fragmentShader:'varying float vA;void main(){float d=length(gl_PointCoord-.5);gl_FragColor=vec4(vec3(1.,.95,.9)*(1.-d*2.)*vA*.9,1.);}'});
-  world.add(new THREE.Points(dg,dustMat));
-  // --- blue smoke: a few big soft billboards over the DJ end
+  const dust=new THREE.Points(dg,dustMat);world.add(dust);
+  (window.__FX=window.__FX||{}).screen=[faceA,faceB,beam,dust];window.__FX.smoke=[];
+  // ---- blue smoke layer over the DJ end
   const C=document.createElement('canvas');C.width=C.height=128;const c=C.getContext('2d');
-  for(let i=0;i<14;i++){const x=34+rnd()*60,y=34+rnd()*60,r=22+rnd()*30;const g=c.createRadialGradient(x,y,0,x,y,r);
-    g.addColorStop(0,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,128,128)}
-  const smokeTex=new THREE.CanvasTexture(C);
-  const puffs=[];const smoke=new THREE.Group();world.add(smoke);
+  for(let i=0;i<14;i++){const x=34+rnd()*60,y=34+rnd()*60,r=22+rnd()*30;const gr=c.createRadialGradient(x,y,0,x,y,r);
+    gr.addColorStop(0,'rgba(255,255,255,.35)');gr.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=gr;c.fillRect(0,0,128,128)}
+  const smokeTex=new THREE.CanvasTexture(C);const puffs=[];
   for(let i=0;i<30;i++){
     const m=new THREE.SpriteMaterial({map:smokeTex,color:new THREE.Color().setHSL(.6+rnd()*.04,1,.38+rnd()*.12),transparent:true,opacity:.32+rnd()*.2,depthWrite:false,fog:false});
     const s=new THREE.Sprite(m);const sz=3+rnd()*3;s.scale.set(sz*1.4,sz*.75,1);
     const b={x:.4+rnd()*9.2,y:4.4+rnd()*3.4,z:-17-rnd()*18,ph:rnd()*6.28,sp:.15+rnd()*.2};
-    s.position.set(b.x,b.y,b.z);s.material.rotation=rnd()*6.28;smoke.add(s);puffs.push({s,b});
+    s.position.set(b.x,b.y,b.z);s.material.rotation=rnd()*6.28;world.add(s);puffs.push({s,b});window.__FX.smoke.push(s);
   }
-  // --- one cheap updater (~30 fps)
-  let lastFrame=-1;
+  // ---- one cheap updater (~25 fps), paused when the tab is hidden
+  let last=performance.now();draw(0,0);
   setInterval(()=>{
     if(document.hidden)return;
-    const t=still?0:(performance.now()-T0)/1000;
-    const f=(Math.floor(t*8)+14)%24;
-    if(f!==lastFrame){lastFrame=f;mapMat.uniforms.off.value.set((f%4)/4,1-(Math.floor(f/4)+1)/6)}
+    const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
+    const t=still?0:(now-T0)/1000;
+    if(faceA.visible)draw(t,dt);
     beamMat.uniforms.t.value=t;dustMat.uniforms.t.value=t;
-    puffs.forEach(({s,b})=>{s.position.x=b.x+Math.sin(t*b.sp+b.ph)*.8;s.position.y=b.y+Math.sin(t*b.sp*.7+b.ph)*.3;s.material.rotation+=still?0:.002})
-  },33);
+    puffs.forEach(({s,b})=>{s.position.x=b.x+Math.sin(t*b.sp+b.ph)*.8;s.position.y=b.y+Math.sin(t*b.sp*.7+b.ph)*.3;s.material.rotation+=still?0:.002});
+  },40);
+}
+
+// ---- effect toggles (remembered per browser)
+{
+  const FX=window.__FX||{};let saved={};try{saved=JSON.parse(localStorage.getItem('soiFx')||'{}')}catch(e){}
+  const panel=document.getElementById('fxPanel'),btn=document.getElementById('t-fx');
+  function apply(k,on){(FX[k]||[]).forEach(o=>o.visible=on)}
+  panel.querySelectorAll('input[data-fx]').forEach(inp=>{const k=inp.dataset.fx;if(k in saved)inp.checked=!!saved[k];apply(k,inp.checked);
+    inp.onchange=()=>{apply(k,inp.checked);saved[k]=inp.checked;try{localStorage.setItem('soiFx',JSON.stringify(saved))}catch(e){}}});
+  btn.onclick=e=>{e.stopPropagation();const open=panel.hidden;panel.hidden=!open;btn.setAttribute('aria-expanded',open);btn.setAttribute('aria-pressed',open)};
+  addEventListener('click',e=>{if(!panel.hidden&&!panel.contains(e.target)&&e.target!==btn){panel.hidden=true;btn.setAttribute('aria-expanded',false);btn.setAttribute('aria-pressed',false)}});
 }
 
 window.__ready=true;
