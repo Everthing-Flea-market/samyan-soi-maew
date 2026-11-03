@@ -640,10 +640,35 @@ MAT.goods.onBeforeCompile=sh=>{
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;\nvec3 pal(float t){return .55+.45*cos(6.2831*(t+vec3(0.,.33,.67)));}')
     .replace('vec4 diffuseColor = vec4( diffuse, opacity );','float hh=fract(sin(dot(floor(vWP*1.6),vec3(12.9898,78.233,37.719)))*43758.5453);vec4 diffuseColor=vec4(mix(diffuse,pal(hh),.55),opacity);if(vWP.y<0.08)diffuseColor.rgb=vec3(.03);');
 };
+// layout v3: booths F07–F12 and F29 taken out (F29 is now the shrine entrance), DJ set moved 8.5 m closer
+const DJ_DZ=8.5;
+const ALLB=[[10.1,-10.62],[9.64,-12.48],[9.17,-14.41],[8.72,-16.27],[8.29,-18.12],[7.82,-19.98],[7.37,-21.84],[6.91,-23.7],[6.47,-25.56],
+  [.97,-.96],[.97,-2.88],[.97,-4.78],[.97,-6.7],[.98,-10.53],[.99,-12.43],[.99,-14.35],[.99,-16.33],[.99,-18.24],[1,-20.16],[.99,-22.07],[.99,-24.03],[1,-25.93],
+  [5.7,-1.06],[5.47,-2.96],[5.26,-4.86],[5.03,-6.77],[7.53,-1.28],[7.31,-3.18],[7.09,-5.07],[6.87,-6.98],[12.37,-1.29],[11.92,-3.16],[11.47,-5.01],[11,-6.9],
+  [2.87,5.38],[4.78,5.39],[6.7,5.39],[8.6,5.4],[10.52,5.4]];
+const GONE=new Set([6,7,8,19,20,21,36]);
+function reshape(o,key){
+  if(!['canopy','table','pole','upper','goods'].includes(key))return;
+  o.updateMatrixWorld(true);
+  let g=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();
+  const P=g.attributes.position,N=g.attributes.normal,m=o.matrixWorld,inv=m.clone().invert();
+  const v=new THREE.Vector3(),keepP=[],keepN=[];
+  for(let t=0;t<P.count;t+=3){
+    let cx=0,cz=0;const w=[];
+    for(let k=0;k<3;k++){v.fromBufferAttribute(P,t+k).applyMatrix4(m);w.push(v.clone());cx+=v.x/3;cz+=v.z/3}
+    let bi=-1,bd=1e9;ALLB.forEach((b,i)=>{const d=(b[0]-cx)**2+(b[1]-cz)**2;if(d<bd){bd=d;bi=i}});
+    if(GONE.has(bi)&&bd<1.7*1.7)continue;
+    const dj=key==='goods'&&cz<-31.5&&cx<4.5;
+    for(let k=0;k<3;k++){const q=w[k];if(dj)q.z+=DJ_DZ;q.applyMatrix4(inv);keepP.push(q.x,q.y,q.z);if(N)keepN.push(N.getX(t+k),N.getY(t+k),N.getZ(t+k))}
+  }
+  const ng=new THREE.BufferGeometry();ng.setAttribute('position',new THREE.Float32BufferAttribute(keepP,3));
+  if(N)ng.setAttribute('normal',new THREE.Float32BufferAttribute(keepN,3));else ng.computeVertexNormals();
+  o.geometry.dispose();o.geometry=ng;
+}
 const bin=Uint8Array.from(atob(window.__GLB__),c=>c.charCodeAt(0)).buffer;
 new GLTFLoader().parse(bin,'',g=>{
   Object.values(MAT).forEach(m=>{m.flatShading=true;m.needsUpdate=true});
-  g.scene.traverse(o=>{if(o.isMesh){const k=(o.name||'').replace(/_\d+$/,'');const key=Object.keys(MAT).find(n=>k.includes(n));o.material=MAT[key]||MAT.goods;}});
+  g.scene.traverse(o=>{if(o.isMesh){const k=(o.name||'').replace(/_\d+$/,'');const key=Object.keys(MAT).find(n=>k.includes(n));o.material=MAT[key]||MAT.goods;reshape(o,key)}});
   world.add(g.scene);document.getElementById('loading').hidden=true;
 },e=>{document.getElementById('loading').textContent='โหลดโมเดลไม่สำเร็จ: '+e.message});
 
@@ -661,9 +686,9 @@ new GLTFLoader().parse(bin,'',g=>{
 // warm booth work-lamps under the canopies
 [[1,-6],[1,-20],[9,-3],[5.5,-3],[8.5,-18],[6.5,5.3]].forEach(([x,z])=>{const l=new THREE.PointLight(0xffd8a0,14,8,1.5);l.position.set(x,2.1,z);world.add(l)});
 // DJ booth wash
-{const a=new THREE.PointLight(0xb04cff,18,12,1.5);a.position.set(1.5,3,-33);world.add(a);
- const b=new THREE.PointLight(0x2fd0ff,14,12,1.5);b.position.set(4.5,3,-34);world.add(b);
- const s=new THREE.SpotLight(0xff3ad0,40,26,.35,.5,1.2);s.position.set(3,6,-36);s.target.position.set(5,0,-26);world.add(s,s.target);djLights.push(a,b,s);}
+{const a=new THREE.PointLight(0xb04cff,18,12,1.5);a.position.set(1.5,3,-33+8.5);world.add(a);
+ const b=new THREE.PointLight(0x2fd0ff,14,12,1.5);b.position.set(4.5,3,-34+8.5);world.add(b);
+ const s=new THREE.SpotLight(0xff3ad0,40,26,.35,.5,1.2);s.position.set(3,6,-36+8.5);s.target.position.set(5,0,-26+8.5);world.add(s,s.target);djLights.push(a,b,s);}
 
 // ---------- zone labels ----------
 const labels=new THREE.Group();labels.visible=false;scene.add(labels);
@@ -673,8 +698,8 @@ function label(text,x,y,z,col='#ffe6bd',size=1){
   c2.font='600 64px Anuphan, sans-serif';c2.fillStyle=col;c2.textAlign='center';c2.textBaseline='middle';c2.fillText(text,w/2,54);
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex(C),depthTest:false,transparent:true,sizeAttenuation:false}));s.scale.set(w/100*size*.042,.042*size,1);s.position.set(x,y,z);s.renderOrder=10;labels.add(s);
 }
-label('โซน F10–F22',.9,4.6,-14);label('โซน F01–F09',8,4.6,-17);label('F23–F26 · A01–A08',7,4.6,-3.5,'#fff36a');
-label('โซนที่นั่ง',5,2.6,-12,'#bfe8ff',.8);label('DJ',2.8,3.8,-33,'#e6b8ff');
+label('โซน F13–F22',.9,4.6,-10);label('โซน F01–F06',8.6,4.6,-15);label('F23–F26 · A01–A08',7,4.6,-3.5,'#fff36a');
+label('โซนที่นั่ง',5,2.6,-12,'#bfe8ff',.8);label('DJ',2.8,3.8,-33+8.5,'#e6b8ff');label('ทางเข้าศาล',6.7,2.4,5.4,'#ffb4a6',.8);
 label('ศาลเจ้าพ่อเสือ',6.7,8.5,15,'#ffb4a6',1.2);
 label('ไป ถ.พระรามที่ 4',-28,2.2,2.25,'#d7dbe8',1.1);label('ไป ซ.จุฬาลงกรณ์ 50',36,2.2,2.25,'#d7dbe8',1.1);
 
@@ -688,7 +713,7 @@ addEventListener('resize',resize);resize();
 const VIEWS={
   over:{p:[-6,36,-58],t:[7,0,-4]},
   shrine:{p:[4.6,1.7,-21],t:[6.3,3.4,12]},
-  dj:{p:[3.7,2.2,-27],t:[3,1.1,-33.5]},
+  dj:{p:[3.4,3.7,-18.6],t:[2.3,1.0,-25.2]},
   top:{p:[6,78,-8],t:[6,0,-10.5]},
 };
 let tween=null;
@@ -719,14 +744,14 @@ renderer.setAnimationLoop(()=>{
 // ===================================================================
 const CAT={F:{name:'งานคราฟท์ แฟชั่น',price:900,col:'#4fd8ec'},A:{name:'ร้านอาหารและเครื่องดื่ม',price:1200,col:'#ffd93b'}};
 const ZONES=[
-  {name:'แถวริมตึก (F10–F22)',ids:['F22','F21','F20','F19','F18','F17','F16','F15','F14','F13','F12','F11','F10'],
-   pos:[[.97,-.96],[.97,-2.88],[.97,-4.78],[.97,-6.7],[.98,-10.53],[.99,-12.43],[.99,-14.35],[.99,-16.33],[.99,-18.24],[1,-20.16],[.99,-22.07],[.99,-24.03],[1,-25.93]]},
-  {name:'แถวเฉียง (F01–F09)',ids:['F01','F02','F03','F04','F05','F06','F07','F08','F09'],
-   pos:[[10.1,-10.62],[9.64,-12.48],[9.17,-14.41],[8.72,-16.27],[8.29,-18.12],[7.82,-19.98],[7.37,-21.84],[6.91,-23.7],[6.47,-25.56]]},
+  {name:'แถวริมตึก (F13–F22)',ids:['F22','F21','F20','F19','F18','F17','F16','F15','F14','F13'],
+   pos:[[.97,-.96],[.97,-2.88],[.97,-4.78],[.97,-6.7],[.98,-10.53],[.99,-12.43],[.99,-14.35],[.99,-16.33],[.99,-18.24],[1,-20.16]]},
+  {name:'แถวเฉียง (F01–F06)',ids:['F01','F02','F03','F04','F05','F06'],
+   pos:[[10.1,-10.62],[9.64,-12.48],[9.17,-14.41],[8.72,-16.27],[8.29,-18.12],[7.82,-19.98]]},
   {name:'บล็อกหน้าซอย (F23–F26)',ids:['F26','F25','F24','F23'],pos:[[5.7,-1.06],[5.47,-2.96],[5.26,-4.86],[5.03,-6.77]]},
   {name:'อาหารและเครื่องดื่ม (A01–A08)',ids:['A05','A06','A07','A08','A01','A02','A03','A04'],
    pos:[[7.53,-1.28],[7.31,-3.18],[7.09,-5.07],[6.87,-6.98],[12.37,-1.29],[11.92,-3.16],[11.47,-5.01],[11,-6.9]]},
-  {name:'หน้าศาลเจ้า (F27–F31)',ids:['F27','F28','F29','F30','F31'],pos:[[2.87,5.38],[4.78,5.39],[6.7,5.39],[8.6,5.4],[10.52,5.4]]},
+  {name:'หน้าศาลเจ้า (F27–F31)',ids:['F27','F28','F30','F31'],pos:[[2.87,5.38],[4.78,5.39],[8.6,5.4],[10.52,5.4]]},
 ];
 const BOOTH={};
 ZONES.forEach(z=>{z.ids.forEach((id,i)=>BOOTH[id]={id,zone:z.name,cat:CAT[id[0]],x:z.pos[i][0],z:z.pos[i][1],status:'free',shop:''});z.ids=[...z.ids].sort()});
@@ -837,9 +862,9 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLive()
 {
   const PATHS=[
     {a:[-24,2.0],b:[34,2.0],n:9,w:1.4},      // the 4.5 m soi in front of the shrine
-    {a:[3.0,-0.6],b:[3.1,-26],n:12,w:0.6},   // main aisle beside F10–F22
+    {a:[3.0,-0.6],b:[3.1,-21.2],n:11,w:0.6},   // main aisle beside F13–F22
     {a:[9.5,-0.6],b:[9.0,-8.2],n:4,w:0.5},   // aisle between A blocks
-    {a:[8.3,-9.4],b:[4.9,-25.5],n:8,w:0.6},  // walkway along F01–F09
+    {a:[8.3,-9.4],b:[6.2,-20.6],n:6,w:0.6},  // walkway along F01–F06
   ];
   const SHIRT=[0xe9e6df,0x1d1d22,0x2b4c8c,0x9a2b33,0xc79a5b,0x3f7a4c,0xe08aa0,0x6c6f78,0xe8c547,0x6aa6d8,0xff7a3d,0x7b4fb8];
   const PANTS=[0x1b2233,0x111114,0x6b5a46,0x2c3f66,0x8a8a8a,0x24262b];
@@ -1012,7 +1037,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLive()
   for(let i=0;i<30;i++){
     const m=new THREE.SpriteMaterial({map:smokeTex,color:new THREE.Color().setHSL(.6+rnd()*.04,1,.38+rnd()*.12),transparent:true,opacity:.32+rnd()*.2,depthWrite:false,fog:false});
     const s=new THREE.Sprite(m);const sz=3+rnd()*3;s.scale.set(sz*1.4,sz*.75,1);
-    const b={x:.4+rnd()*9.2,y:4.4+rnd()*3.4,z:-17-rnd()*18,ph:rnd()*6.28,sp:.15+rnd()*.2};
+    const b={x:.4+rnd()*9.2,y:4.4+rnd()*3.4,z:-12-rnd()*16,ph:rnd()*6.28,sp:.15+rnd()*.2};
     s.position.set(b.x,b.y,b.z);s.material.rotation=rnd()*6.28;world.add(s);puffs.push({s,b});window.__FX.smoke.push(s);
   }
   // ---- one cheap updater (~25 fps), paused when the tab is hidden
