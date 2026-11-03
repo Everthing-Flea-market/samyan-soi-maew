@@ -1,0 +1,768 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>สามย่านซอยแมว · ผังล็อกร้านค้า</title>
+<meta name="description" content="ผังล็อกร้านค้า 3D งานสามย่านซอยแมว 13–15 พ.ย. 2569 16:00–20:00 น. ดูล็อกว่าง ราคา และติดต่อจองผ่าน LINE / Facebook">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;600&family=Mitr:wght@500&display=swap">
+<style>
+/* Layout: full-bleed WebGL night scene, a slim control dock pinned to the bottom edge */
+:root{
+  --ink:#0a0d1a; --panel:rgba(14,17,34,.78); --line:rgba(255,214,150,.18);
+  --fg:#f3ead9; --muted:#a9a3b8; --bulb:#ffc66e; --lantern:#e5483a;
+  --display:"Mitr","Anuphan",system-ui,sans-serif; --body:"Anuphan",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%;background:var(--ink);color:var(--fg);font-family:var(--body);overflow:hidden}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.title{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));pointer-events:none;max-width:min(520px,calc(100% - 32px))}
+.title h1{font-family:var(--display);font-weight:500;font-size:clamp(20px,3.2vw,30px);margin:0;letter-spacing:.01em;text-wrap:balance;text-shadow:0 0 18px rgba(255,180,90,.35)}
+.title p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.dock{position:fixed;left:0;right:0;bottom:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(14px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;pointer-events:none}
+.bar{pointer-events:auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);max-width:100%}
+.bar .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+button{font:600 13px var(--body);color:var(--fg);background:transparent;border:1px solid transparent;border-radius:9px;padding:7px 11px;cursor:pointer;white-space:nowrap}
+button:hover{background:rgba(255,198,110,.1)}
+button[aria-pressed="true"]{background:rgba(255,198,110,.16);border-color:rgba(255,198,110,.45);color:#ffe2b0}
+button:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
+#loading{position:fixed;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;pointer-events:none}
+.hint{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:calc(16px + env(safe-area-inset-top,0px));font-size:12px;color:var(--muted);text-align:right;pointer-events:none}
+
+/* ---- booth booking + event info ---- */
+:root{--free:#36d97f;--booked:#ff4d6d;--pink:#ff3fa4;--card:rgba(14,17,34,.9)}
+.title{pointer-events:auto}
+.title .logo{display:block;width:clamp(150px,15vw,210px);height:auto;margin:0 0 8px -4px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.55))}
+.title .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--body);padding:5px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--fg)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.dot.free{background:var(--free);box-shadow:0 0 8px var(--free)}
+.dot.booked{background:var(--booked);box-shadow:0 0 8px var(--booked)}
+.actions{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));display:flex;gap:8px;z-index:5}
+.iconbtn{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font:600 13px var(--body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer}
+.iconbtn:hover{border-color:rgba(255,198,110,.5)}
+.iconbtn svg{width:18px;height:18px;flex:none}
+.iconbtn.map svg{color:#ff5a5a}
+.contact{margin-top:14px}
+.price{margin-top:12px;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.price .cat{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.sw{width:14px;height:14px;border-radius:4px;display:inline-block;flex:none}
+.price .amt{font:500 26px var(--display);margin-top:4px;color:#fff}
+.price .amt small{font:400 13px var(--body);color:var(--muted)}
+.price .spec{font-size:12px;color:var(--muted);margin-top:4px}
+.legend{display:grid;gap:6px;margin:12px 0 2px;font-size:13px}
+.legend div{display:flex;align-items:center;gap:8px}
+.contact .lbl{font-size:13px;color:var(--fg);margin-bottom:8px;font-weight:600}
+.contact .row{display:flex;gap:8px;flex-wrap:wrap}
+.cbtn{flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;font:600 14px var(--body);color:#fff;border-radius:10px;padding:10px 12px}
+.cbtn.line{background:#06c755}
+.cbtn.fb{background:#1877f2}
+.cbtn:hover{filter:brightness(1.1)}
+.cbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.cbtn svg{width:18px;height:18px;flex:none}
+.sheet{position:fixed;z-index:20;background:var(--card);border:1px solid var(--line);color:var(--fg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.sheet[hidden]{display:none!important}
+.sheet .close{position:absolute;top:8px;right:8px;width:34px;height:34px;padding:0;font-size:20px;line-height:1}
+#boothSheet{right:max(16px,env(safe-area-inset-right,0px));top:76px;width:300px;border-radius:16px;padding:18px}
+#boothSheet h2{font:500 30px var(--display);margin:0}
+#boothSheet .zone{color:var(--muted);font-size:13px;margin-top:2px}
+.badge{display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-weight:600;padding:6px 12px;border-radius:999px}
+.badge.free{background:rgba(54,217,127,.14);color:#8ff0b7}
+.badge.booked{background:rgba(255,77,109,.15);color:#ff9fb1}
+.shop{margin-top:12px;font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.staff{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.staff .lbl{font-size:12px;color:var(--muted);margin-bottom:6px}
+.seg{display:flex;gap:6px;margin-bottom:10px}
+.seg button{flex:1;border:1px solid var(--line)}
+.seg button[aria-pressed="true"].f{background:rgba(54,217,127,.2);border-color:var(--free);color:#c5f7da}
+.seg button[aria-pressed="true"].b{background:rgba(255,77,109,.2);border-color:var(--booked);color:#ffd0da}
+.staff input{width:100%;box-sizing:border-box;font:15px var(--body);color:var(--fg);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:9px;padding:9px 10px}
+.primary{width:100%;margin-top:10px;background:var(--bulb);color:#241606;border-color:var(--bulb)}
+.primary:hover{background:#ffd48f}
+.msg{font-size:12px;color:var(--muted);margin-top:8px;min-height:1em}
+#listSheet{left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 32px));max-height:min(60vh,520px);overflow:auto;border-radius:16px;padding:16px}
+#listSheet h3{font:500 15px var(--display);margin:14px 0 8px;color:#ffe2b0}
+#listSheet h3:first-of-type{margin-top:4px}
+.grid{display:flex;flex-wrap:wrap;gap:6px}
+.bchip{font:600 12px var(--body);padding:6px 9px;border-radius:9px;border:1px solid transparent;cursor:pointer;color:#0b0f17;min-width:44px}
+.bchip.free{background:var(--free)}
+.bchip.booked{background:var(--booked);color:#fff}
+.bchip:focus-visible{outline:2px solid #fff}
+#eventSheet{inset:0;margin:auto;width:min(860px,calc(100% - 32px));height:fit-content;max-height:calc(100% - 32px);overflow:auto;border-radius:18px;padding:22px;display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:22px}
+#eventSheet img{width:100%;border-radius:12px;display:block}
+#eventSheet h2{font:500 clamp(24px,4vw,34px) var(--display);margin:0;color:#ff9fd0}
+#eventSheet .tag{color:var(--muted);margin:4px 0 14px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin:0 0 16px}
+.facts dt{color:var(--muted);font-size:13px}
+.facts dd{margin:0;font-weight:600}
+.artists{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 16px}
+.artists span{font-size:12px;padding:4px 9px;border-radius:999px;background:rgba(255,63,164,.12);border:1px solid rgba(255,63,164,.35)}
+.scrim{position:fixed;inset:0;background:rgba(3,4,10,.6);z-index:19}
+.scrim[hidden]{display:none}
+@media (max-width:640px){
+  .actions .iconbtn span{display:none}
+  .title{max-width:calc(100% - 140px)}
+  .title p{display:none}
+  .title .logo{width:118px;margin-bottom:4px}
+  .title h1{font-size:15px}
+  .title .meta{margin-top:6px}
+  #boothSheet{left:12px;right:12px;width:auto;top:auto;bottom:calc(118px + env(safe-area-inset-bottom,0px));border-radius:16px}
+  #eventSheet{grid-template-columns:1fr;padding:18px}
+  #eventSheet img{max-width:280px;margin:0 auto}
+}
+
+@media (max-width:640px){.hint{display:none}.bar .sep{display:none}button{padding:7px 9px;font-size:12px}}
+</style>
+
+<div id="stage"></div>
+<div class="title">
+  <img class="logo" src="img/logo.png" alt="สามย่าน Art Week" width="720" height="416">
+  <h1>สามย่านซอยแมว · ผังล็อกร้านค้า</h1>
+  <p>13–15 พ.ย. 2569 · 16:00–20:00 น. · กดที่ป้ายล็อกเพื่อดูรายละเอียด</p>
+  <div class="meta">
+    <span class="chip"><i class="dot free"></i>ว่าง <b id="cFree">–</b></span>
+    <span class="chip"><i class="dot booked"></i>จองแล้ว <b id="cBooked">–</b></span>
+  </div>
+</div>
+<div class="actions">
+  <a class="iconbtn map" href="https://maps.app.goo.gl/L5bVtPDGXNBDVik88" target="_blank" rel="noopener" aria-label="เปิดแผนที่ Google Maps">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>Google Maps</span></a>
+  <button class="iconbtn" id="openEvent" aria-label="รายละเอียดงาน">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>รายละเอียดงาน</span></button>
+</div>
+
+<div class="sheet" id="boothSheet" hidden role="dialog" aria-labelledby="bId">
+  <button class="close" id="closeBooth" aria-label="ปิด">×</button>
+  <h2 id="bId">–</h2>
+  <div class="zone" id="bZone"></div>
+  <div class="price" id="bPrice"></div>
+  <div class="badge" id="bBadge"></div>
+  <div class="shop" id="bShop"></div>
+  <div class="contact"><div class="lbl" id="bContactLbl">สนใจจองล็อกนี้ ติดต่อได้ที่</div><div class="row">
+    <a class="cbtn line" href="https://lin.ee/RC5A0Ip" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s6-3.5 8.2-6c1.5-1.6 2.2-3.2 2.2-4.9C22.4 6.6 17.9 3 12 3z"/></svg>LINE</a>
+    <a class="cbtn fb" href="https://www.facebook.com/profile.php?id=61593236913303" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v6h4v-6H17l.5-4h-4V9c0-.6.4-1 1-1z"/></svg>Facebook</a>
+  </div></div>
+</div>
+
+<div class="sheet" id="listSheet" hidden role="dialog" aria-label="ล็อกทั้งหมด">
+  <div class="contact" style="margin:0 0 6px"><div class="lbl">สนใจจองล็อกร้านค้า ติดต่อได้ที่</div><div class="row">
+    <a class="cbtn line" href="https://lin.ee/RC5A0Ip" target="_blank" rel="noopener">LINE</a>
+    <a class="cbtn fb" href="https://www.facebook.com/profile.php?id=61593236913303" target="_blank" rel="noopener">Facebook</a>
+  </div></div>
+  <div class="legend">
+    <div><i class="sw" style="background:#4fd8ec"></i>F · งานคราฟท์ แฟชั่น — 900 บาท / 3 วัน</div>
+    <div><i class="sw" style="background:#ffd93b"></i>A · ร้านอาหารและเครื่องดื่ม — 1,200 บาท / 3 วัน</div>
+    <div style="color:var(--muted);font-size:12px">ขนาดร้าน 2×2 เมตร · มีโต๊ะให้ 1.5 เมตร</div>
+  </div>
+  <div id="listBody"></div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="eventSheet" hidden role="dialog" aria-labelledby="evTitle">
+  <button class="close" id="closeEvent" aria-label="ปิด">×</button>
+  <img src="img/poster.jpg" alt="โปสเตอร์งานสามย่านซอยแมว">
+  <div>
+    <h2 id="evTitle">สามย่านซอยแมว</h2>
+    <div class="tag">ซอยเล็กๆ อาร์ตใหญ่ๆ · 16 Street Artists × Street Cat Stories<br>Powered by HYPE DISTRICT · ส่วนหนึ่งของ สามย่าน Art Week</div>
+    <dl class="facts">
+      <dt>วันจัดงาน</dt><dd>ศุกร์ 13 – อาทิตย์ 15 พฤศจิกายน 2569</dd>
+      <dt>เวลา</dt><dd>16:00 – 20:00 น.</dd>
+      <dt>สถานที่</dt><dd>ซอยหน้าศาลเจ้าพ่อเสือ ย่านสามย่าน</dd>
+      <dt>ร้านค้า</dt><dd><span id="evCount">–</span></dd>
+      <dt>ค่าล็อก</dt><dd>คราฟท์ / แฟชั่น 900 บาท · อาหาร / เครื่องดื่ม 1,200 บาท (3 วัน)<br><span style="font-weight:400;color:var(--muted);font-size:13px">ขนาดร้าน 2×2 ม. มีโต๊ะให้ 1.5 ม.</span></dd>
+    </dl>
+    <a class="iconbtn map" href="https://maps.app.goo.gl/L5bVtPDGXNBDVik88" target="_blank" rel="noopener" style="display:inline-flex">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>นำทางด้วย Google Maps</a>
+    <h3 style="font:500 15px var(--display);margin:18px 0 4px;color:#ffe2b0">ศิลปิน</h3>
+    <div class="artists">
+      <span>LOLAY</span><span>RUKKIT</span><span>OAKY</span><span>TOON KAEWKERD</span><span>PHAI TANASAN</span><span>MECHANOME</span><span>JECKS</span><span>HAIHAITOON</span><span>NO.22</span><span>1SEPTEMBER</span><span>EL EL ELPIS</span><span>NARISARA</span><span>SANDIER</span><span>DOJO</span><span>NEOW</span><span>STYLEPOP</span>
+    </div>
+    <div class="contact" style="margin:0 0 16px"><div class="lbl">สนใจออกร้าน ติดต่อร้านค้าได้ที่</div><div class="row" style="max-width:360px">
+      <a class="cbtn line" href="https://lin.ee/RC5A0Ip" target="_blank" rel="noopener">LINE</a>
+      <a class="cbtn fb" href="https://www.facebook.com/profile.php?id=61593236913303" target="_blank" rel="noopener">Facebook</a>
+    </div></div>
+    <div style="font-size:12px;color:var(--muted)">ร่วมจัดโดย PMCU · HYPE · NUK NUK BBK · HYPE DISTRICT</div>
+  </div>
+</div>
+<div id="loading">กำลังโหลดฉาก…</div>
+<div class="dock"><div class="bar" role="toolbar" aria-label="มุมกล้อง">
+  <button id="v-over" data-view="over" aria-pressed="true">ภาพรวม</button>
+  <button id="v-shrine" data-view="shrine">มองไปศาลเจ้า</button>
+  <button id="v-dj" data-view="dj">มองไปเวที DJ</button>
+  <button id="v-top" data-view="top">มุมบน</button>
+  <span class="sep"></span>
+  <button id="t-list" aria-pressed="false">ล็อกทั้งหมด</button>
+  <button id="t-labels" aria-pressed="false">ป้ายโซน</button>
+  <button id="t-spin" aria-pressed="false">หมุนอัตโนมัติ</button>
+</div></div>
+
+<script type="importmap">
+{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}
+</script>
+<script src="scene-data.js"></script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+
+// ---------- seeded random so the scene is the same every load ----------
+let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+const pick=a=>a[Math.floor(rnd()*a.length)];
+
+try{await Promise.race([Promise.all(['600 64px Anuphan','500 64px Mitr','700 64px Mitr'].map(f=>document.fonts.load(f))),new Promise(r=>setTimeout(r,2500))])}catch(e){}
+const djLights=[];
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.3;
+stage.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x0b1022,0.0042);
+const camera=new THREE.PerspectiveCamera(50,1,0.1,2000);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.495; controls.minDistance=2; controls.maxDistance=260;
+
+// ---------- sky ----------
+{
+  const g=new THREE.SphereGeometry(1200,32,16);
+  const m=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{},
+    vertexShader:`varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`varying vec3 vP;void main(){float h=clamp(vP.y,0.,1.);
+      vec3 top=vec3(.012,.018,.055),mid=vec3(.05,.06,.16),hor=vec3(.32,.17,.20);
+      vec3 c=mix(hor,mid,smoothstep(0.,.18,h));c=mix(c,top,smoothstep(.15,.7,h));
+      if(vP.y<0.)c=vec3(.03,.03,.06);gl_FragColor=vec4(c,1.);}`});
+  scene.add(new THREE.Mesh(g,m));
+  const sp=[];for(let i=0;i<900;i++){const t=rnd()*Math.PI*2,u=0.15+rnd()*0.85,r=1100;const y=u*r,rr=Math.sqrt(r*r-y*y);sp.push(Math.cos(t)*rr,y,Math.sin(t)*rr)}
+  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sp,3));
+  scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xcfd8ff,size:1.6,sizeAttenuation:false,fog:false,transparent:true,opacity:.7})));
+  const moon=new THREE.Mesh(new THREE.SphereGeometry(14,24,12),new THREE.MeshBasicMaterial({color:new THREE.Color(1.6,1.55,1.4),fog:false}));
+  moon.position.set(-420,520,-700);scene.add(moon);
+}
+scene.add(new THREE.HemisphereLight(0x5466a8,0x2a1e14,1.15));
+const moonLight=new THREE.DirectionalLight(0x8fa6ff,0.35);moonLight.position.set(-40,80,-60);scene.add(moonLight);
+
+// ---------- canvas texture helpers ----------
+function canvasPair(w,h){const a=document.createElement('canvas'),b=document.createElement('canvas');a.width=b.width=w;a.height=b.height=h;
+  const c=a.getContext('2d'),e=b.getContext('2d');e.fillStyle='#000';e.fillRect(0,0,w,h);return {a,b,c,e,w,h}}
+function tex(cv,rx=1,ry=1){const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rx,ry);t.anisotropy=4;return t}
+function litWindow(P,x,y,w,h,on,warm=true){
+  const col=on?(warm?pick(['#ffd28a','#ffc070','#ffe0a8','#f6b860']):pick(['#cfe4ff','#a8c8ff','#e8f0ff'])):pick(['#1a2030','#141a26','#232838']);
+  P.c.fillStyle=col;P.c.fillRect(x,y,w,h);
+  if(on){P.e.fillStyle=col;P.e.fillRect(x,y,w,h);
+    // a curtain or silhouette breaks up the glow
+    if(rnd()<.5){P.c.fillStyle=P.e.fillStyle='rgba(60,30,20,.55)';const cw=w*(.2+rnd()*.3);P.c.fillRect(x,y,cw,h);P.e.fillRect(x,y,cw,h)}}
+}
+function towerTexture(cols,rows,warmBias,litP,glass){
+  const P=canvasPair(256,512),cw=256/cols,rh=512/rows;
+  P.c.fillStyle=glass?'#1b2740':'#2a2c34';P.c.fillRect(0,0,256,512);
+  for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){const on=rnd()<litP;
+    litWindow(P,i*cw+cw*.12,j*rh+rh*.18,cw*.76,rh*.64,on,rnd()<warmBias)}
+  return P;
+}
+
+// ---------- coordinate helper: plan (stl) x,y  ->  three x,z ----------
+const W=(x,y)=>[x,-y];
+const world=new THREE.Group();scene.add(world);
+
+function box(w,h,d,mat,x,y,z,ry=0){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.rotation.y=ry;world.add(m);return m}
+const std=(o)=>new THREE.MeshStandardMaterial(Object.assign({roughness:.9,metalness:0},o));
+
+// ---------- ground ----------
+{
+  const P=canvasPair(512,512);P.c.fillStyle='#5d5a55';P.c.fillRect(0,0,512,512);
+  for(let i=0;i<4000;i++){P.c.fillStyle=`rgba(${rnd()<.5?0:255},${rnd()<.5?0:255},${rnd()<.5?0:255},.035)`;P.c.fillRect(rnd()*512,rnd()*512,2,2)}
+  P.c.strokeStyle='rgba(20,18,16,.6)';P.c.lineWidth=3;P.c.strokeRect(0,0,512,512);
+  const t=tex(P.a,60,60);
+  const g=new THREE.Mesh(new THREE.PlaneGeometry(480,480),std({map:t,roughness:.85}));g.rotation.x=-Math.PI/2;g.position.y=-0.01;world.add(g);
+  // narrow soi in front of the shrine: 4.5 m wide, no lane markings
+  const road=std({color:0x2c2c30,roughness:.75});
+  const r=new THREE.Mesh(new THREE.PlaneGeometry(480,4.5),road);r.rotation.x=-Math.PI/2;r.position.set(0,0.005,2.25);world.add(r);
+  // concrete drain covers along both edges of the soi
+  const gut=std({color:0x4a4844,roughness:.9});
+  [0.18,4.32].forEach(z=>{const d=new THREE.Mesh(new THREE.PlaneGeometry(480,.36),gut);d.rotation.x=-Math.PI/2;d.position.set(0,0.01,z);world.add(d)});
+}
+
+// black floor under the whole market area (alley + shrine-front strip)
+{
+  const blk=std({color:0x050506,roughness:.92});
+  const a=new THREE.Mesh(new THREE.PlaneGeometry(16,36.2),blk);a.rotation.x=-Math.PI/2;a.position.set(6.8,0.012,-18.05);world.add(a);
+  const b=new THREE.Mesh(new THREE.PlaneGeometry(10,2.3),blk);b.rotation.x=-Math.PI/2;b.position.set(6.7,0.012,5.65);world.add(b);
+}
+// ---------- facade builders ----------
+const concrete=std({color:0x8e8a84,roughness:.95});
+const darkConcrete=std({color:0x5c5a57});
+
+// facade texture for an old Bangkok row-house (shophouse) bay
+function shophouseFacade(floors,variant){
+  const P=canvasPair(256,128*floors),H=P.h;
+  const wall=pick(variant==='pink'?['#d6a59a','#cf9f95','#d9b0a2']:['#d7c4a6','#cdbb9f','#e0d2bb','#c9b29a']);
+  P.wall=wall;P.c.fillStyle=wall;P.c.fillRect(0,0,256,H);
+  // stains
+  for(let i=0;i<14;i++){P.c.fillStyle='rgba(60,50,40,.08)';P.c.fillRect(rnd()*256,rnd()*H,10+rnd()*30,30+rnd()*120)}
+  for(let f=1;f<floors;f++){ // upper floors from top down
+    const y0=(floors-1-f)*128;
+    P.c.fillStyle='rgba(0,0,0,.18)';P.c.fillRect(0,y0+120,256,8); // slab line
+    const on=rnd()<.62;
+    litWindow(P,22,y0+24,212,80,on,rnd()<.8);
+    // metal security grille
+    P.c.strokeStyle='#3c3f45';P.c.lineWidth=3;
+    for(let gx=22;gx<=234;gx+=14){P.c.beginPath();P.c.moveTo(gx,y0+20);P.c.lineTo(gx,y0+106);P.c.stroke()}
+    P.c.beginPath();P.c.moveTo(22,y0+60);P.c.lineTo(234,y0+60);P.c.stroke();
+    P.e.globalAlpha=.65;P.e.fillStyle='#000';for(let gx=22;gx<=234;gx+=14)P.e.fillRect(gx-1.5,y0+20,3,86);P.e.globalAlpha=1;
+    if(rnd()<.45){ // laundry
+      for(let k=0;k<6;k++){P.c.fillStyle=pick(['#e05a6a','#5a8ee0','#f0e6d6','#7ac08a','#e0b84a','#b07ad8']);P.c.fillRect(40+k*30,y0+28,16,26+rnd()*20)}
+    }
+    if(rnd()<.6){P.c.fillStyle='#d9d9d2';P.c.fillRect(200,y0+86,40,24);P.c.fillStyle='#888';P.c.fillRect(206,y0+90,22,16)} // AC unit
+  }
+  // ground floor: orange slat fence or lit open shop
+  const y0=(floors-1)*128;
+  if(variant==='pink'&&rnd()<.75){
+    P.c.fillStyle='#b8622c';P.c.fillRect(0,y0+30,256,98);
+    P.c.fillStyle='#8e4a20';for(let x=0;x<256;x+=10)P.c.fillRect(x,y0+30,3,98);
+    if(rnd()<.5){litWindow(P,170,y0+40,60,40,true,true)}
+  }else{
+    const on=rnd()<.7;litWindow(P,10,y0+24,236,104,on,true);
+    P.c.fillStyle='rgba(40,40,46,.85)';for(let x=10;x<246;x+=8)P.c.fillRect(x,y0+24,2,on?20:104);
+  }
+  return P;
+}
+
+// one row-house bay, facade on local -X
+function shophouse(px,pz,ry,width,depth,floors,variant){
+  const g=new THREE.Group();g.position.set(px,0,pz);g.rotation.y=ry;world.add(g);
+  const h=floors*3.2,P=shophouseFacade(floors,variant);
+  const fm=std({map:tex(P.a),emissiveMap:tex(P.b),emissive:0xffffff,emissiveIntensity:1.2});
+  const side=std({color:new THREE.Color(P.wall).multiplyScalar(.7)});
+  const mats=[side,fm,std({color:0x4a3b33}),side,side,side]; // +x,-x,+y,-y,+z,-z
+  const b=new THREE.Mesh(new THREE.BoxGeometry(depth,h,width),mats);b.position.set(depth/2,h/2,0);g.add(b);
+  // corrugated roof lip
+  const roof=new THREE.Mesh(new THREE.BoxGeometry(depth+.6,.25,width+.05),std({color:0x6b6f74,metalness:.4,roughness:.6}));roof.position.set(depth/2-.3,h+.1,0);g.add(roof);
+  // awning
+  if(rnd()<.8){
+    const A=document.createElement('canvas');A.width=64;A.height=32;const ac=A.getContext('2d');
+    const base=pick(variant==='pink'?['#2f8a5a','#2f8a5a','#2a5fb0']:['#2a5fb0','#2f8a5a','#c84a3c']);
+    ac.fillStyle=base;ac.fillRect(0,0,64,32);if(rnd()<.6){ac.fillStyle='rgba(255,255,255,.75)';for(let x=0;x<64;x+=16)ac.fillRect(x,0,8,32)}
+    const aw=new THREE.Mesh(new THREE.PlaneGeometry(1.6,width*.96),std({map:tex(A),side:THREE.DoubleSide,emissive:0x0a0a0a}));
+    aw.rotation.set(0,0,0);aw.rotation.order='YXZ';
+    aw.rotation.x=-Math.PI/2;aw.rotation.y=0; aw.rotateOnAxis(new THREE.Vector3(0,1,0),-0.35);
+    aw.position.set(-0.75,3.05,0);g.add(aw);
+  }
+  // stainless exhaust duct on some, as in the photos
+  if(rnd()<.18){const d=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,h+1.5,10),std({color:0xb8bcc2,metalness:.8,roughness:.35}));d.position.set(-0.2,(h+1.5)/2,width/2-.3);g.add(d)}
+  return g;
+}
+
+// generic block with window grid on all sides (used for far buildings and towers)
+function tower(x,z,w,d,h,{cols=8,rows=30,lit=.35,warm=.6,glass=false,ry=0,crown=false}={}){
+  const P=towerTexture(8,16,warm,lit,glass),rx=w/(glass?18:24),ry2=h/(glass?50:54);
+  const m=std({map:tex(P.a,rx,ry2),emissiveMap:tex(P.b,rx,ry2),emissive:0xffffff,emissiveIntensity:glass?1.1:1.3,roughness:glass?.3:.85,metalness:glass?.5:0});
+  const top=std({color:0x15171d});
+  const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),[m,m,top,top,m,m]);b.position.set(x,h/2,z);b.rotation.y=ry;world.add(b);
+  // red aircraft-warning light on tall roofs
+  if(h>60){const l=new THREE.Mesh(new THREE.SphereGeometry(.7,8,6),new THREE.MeshBasicMaterial({color:new THREE.Color(3,.2,.15)}));l.position.set(x,h+1,z);world.add(l);blinkers.push(l)}
+  if(crown){ // lattice crown seen in the photo looking east
+    const cm=new THREE.MeshBasicMaterial({color:new THREE.Color(1.4,1.2,.8),wireframe:true});
+    const c=new THREE.Mesh(new THREE.CylinderGeometry(w*.25,w*.62,h*.16,4,4,true),cm);c.position.set(x,h+h*.08,z);c.rotation.y=Math.PI/4+ry;world.add(c);
+    const sp=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,h*.12,6),cm);sp.position.set(x,h+h*.22,z);world.add(sp);
+  }
+  return b;
+}
+const blinkers=[];
+// additive glow sprites stand in for bloom: cheap and works on every GPU
+const haloTex=(()=>{const C=document.createElement('canvas');C.width=C.height=64;const c=C.getContext('2d');const g=c.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.18,'rgba(255,255,255,.55)');g.addColorStop(.5,'rgba(255,255,255,.12)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,64,64);return new THREE.CanvasTexture(C)})();
+function halos(pts,color,size,opacity=1){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pts.flat(),3));
+  const p=new THREE.Points(g,new THREE.PointsMaterial({map:haloTex,color,size,transparent:true,opacity,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true}));world.add(p);return p}
+
+// sign made from canvas text, glowing
+function sign(text,{w=4,h=1,font='600 72px Mitr, sans-serif',color='#ffffff',glow=2.2,lines=null,bg=null}={}){
+  const C=document.createElement('canvas');C.width=1024;C.height=Math.round(1024*h/w);const c=C.getContext('2d');
+  if(bg){c.fillStyle=bg;c.fillRect(0,0,C.width,C.height)}
+  c.fillStyle=color;c.font=font;c.textAlign='center';c.textBaseline='middle';
+  const L=lines||[text];L.forEach((t,i)=>c.fillText(t,C.width/2,C.height*(i+.5)/L.length));
+  const t=tex(C);const m=new THREE.MeshBasicMaterial({map:t,transparent:!bg,color:new THREE.Color(glow,glow,glow),side:THREE.DoubleSide,depthWrite:!!bg});
+  return new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);
+}
+
+// ===================================================================
+// NORTH ROW (left of the alley when facing the shrine is the old row;
+// this is the right side: Chicken Roast Coffee, blue building, LOF Gallery)
+// facade line at plan x = -1.2, buildings extend to x = -12
+// ===================================================================
+const FX=-1.2;
+{ // Chicken Roast Coffee: raw-concrete corner building with deep cantilevered slabs
+  const z0=0,z1=-12,len=12,dep=10.5,cx=FX-dep/2,cz=(z0+z1)/2;
+  // ground floor glass box, lit café interior
+  const GP=canvasPair(512,128);GP.c.fillStyle='#ffd9a0';GP.c.fillRect(0,0,512,128);GP.e.fillStyle='#ffcf8a';GP.e.fillRect(0,0,512,128);
+  for(let x=0;x<512;x+=64){GP.c.fillStyle=GP.e.fillStyle='#3a3530';GP.c.fillRect(x,0,5,128);GP.e.fillRect(x,0,5,128)}
+  for(let i=0;i<10;i++){GP.c.fillStyle=GP.e.fillStyle='rgba(70,45,30,.6)';const x=rnd()*500;GP.c.fillRect(x,70,12+rnd()*20,58);GP.e.fillRect(x,70,12+rnd()*20,58)}
+  GP.c.fillStyle=GP.e.fillStyle='#d4572a';for(let i=0;i<14;i++){const x=rnd()*500;GP.c.fillRect(x,108,10,20);GP.e.fillRect(x,108,10,20)} // orange stools
+  const glassM=std({map:tex(GP.a),emissiveMap:tex(GP.b),emissive:0xffffff,emissiveIntensity:.9,roughness:.2});
+  box(dep-1.2,3.2,len-1.0,[glassM,glassM,concrete,concrete,glassM,glassM],cx-0.6,1.6,cz-0.5);
+  // corner pillar walls with the sign
+  box(.35,3.2,2.2,concrete,FX-.35,1.6,-5.2);
+  // first-floor slab, cantilevered toward alley and toward cross street
+  box(dep+1.2,.42,len+1.4,concrete,cx+.6,3.4,cz+.7);
+  // upper floor with long horizontal windows
+  const UP=canvasPair(512,128);UP.c.fillStyle='#8f8b85';UP.c.fillRect(0,0,512,128);
+  UP.c.fillStyle='#ffe0b0';UP.c.fillRect(30,22,300,84);UP.e.fillStyle='#ffd69a';UP.e.fillRect(30,22,300,84);
+  UP.c.fillStyle='#ffe0b0';UP.c.fillRect(380,22,110,84);UP.e.fillStyle='#e8c38a';UP.e.fillRect(380,22,110,84);
+  for(let k=0;k<6;k++){UP.e.fillStyle=UP.c.fillStyle='#fff6dc';UP.c.beginPath();UP.c.arc(60+k*48,32,4,0,7);UP.c.fill();UP.e.beginPath();UP.e.arc(60+k*48,32,4,0,7);UP.e.fill()}
+  const upM=std({map:tex(UP.a),emissiveMap:tex(UP.b),emissive:0xffffff,emissiveIntensity:1});
+  box(dep-.4,3.0,len,[concrete,upM,concrete,concrete,upM,concrete],cx-.2,5.1,cz);
+  // roof slab, big overhang
+  box(dep+1.6,.38,len+1.8,concrete,cx+.8,6.75,cz+.9);
+  box(dep-1,1.2,3,darkConcrete,cx-2,7.5,cz-3); // stair head on the roof
+  // signs
+  const s1=sign('',{w:2.0,h:1.6,lines:['CHICKEN','ROAST','COFFEE'],font:'700 150px Mitr, sans-serif',glow:2.4});
+  s1.position.set(FX-.16,1.9,-5.2);s1.rotation.y=-Math.PI/2;world.add(s1);
+  const s2=sign('',{w:2.0,h:1.6,lines:['CHICKEN','ROAST','COFFEE'],font:'700 150px Mitr, sans-serif',glow:1.6});
+  s2.position.set(cx-3,1.9,.01+0.02);world.add(s2);
+  // café light spilling onto the pavement
+  const pl=new THREE.PointLight(0xffc27a,30,16,1.5);pl.position.set(FX+1.2,2.2,-6);world.add(pl);
+}
+{ // blue building: two storeys, blue frame, white-framed windows, wood-framed glass at street level
+  const z0=-12,z1=-24,len=12,dep=10;
+  const P=canvasPair(512,256);
+  P.c.fillStyle='#1d3fa0';P.c.fillRect(0,0,512,256);
+  for(let i=0;i<5;i++){const x=16+i*100;litWindow(P,x,26,78,78,rnd()<.6,true);P.c.strokeStyle='#f2f2ee';P.c.lineWidth=6;P.c.strokeRect(x,26,78,78);P.c.beginPath();P.c.moveTo(x+39,26);P.c.lineTo(x+39,104);P.c.stroke()}
+  P.c.fillStyle='#1a3890';P.c.fillRect(0,118,512,18);
+  for(let i=0;i<4;i++){const x=12+i*126;litWindow(P,x,140,116,112,rnd()<.75,true);P.c.strokeStyle='#c7914f';P.c.lineWidth=7;P.c.strokeRect(x,140,116,112)}
+  const fm=std({map:tex(P.a),emissiveMap:tex(P.b),emissive:0xffffff,emissiveIntensity:1.1});
+  const blue=std({color:0x1d3fa0});
+  box(dep,6.6,len,[blue,fm,darkConcrete,blue,blue,blue],FX-dep/2,3.3,(z0+z1)/2);
+  box(1.2,.35,len,blue,FX+.5,3.4,(z0+z1)/2); // blue fascia canopy
+  box(.9,.3,len,blue,FX+.35,6.75,(z0+z1)/2);
+}
+{ // white building then red LOF Gallery
+  const P=canvasPair(256,384);P.c.fillStyle='#e9e8e3';P.c.fillRect(0,0,256,384);
+  for(let f=0;f<3;f++)litWindow(P,40,20+f*128,176,80,rnd()<.6,true);
+  const wm=std({map:tex(P.a),emissiveMap:tex(P.b),emissive:0xffffff});
+  const white=std({color:0xd8d6d0});
+  box(10,8.4,5,[white,wm,darkConcrete,white,white,white],FX-5,4.2,-26.5);
+  const red=std({color:0xc8202a,emissive:0x2a0406});
+  const R=canvasPair(256,448);R.c.fillStyle='#c8202a';R.c.fillRect(0,0,256,448);litWindow(R,30,30,196,90,true,false);litWindow(R,30,330,196,110,true,true);
+  const rm=std({map:tex(R.a),emissiveMap:tex(R.b),emissive:0xffffff});
+  box(10,9.6,5,[red,rm,darkConcrete,red,red,red],FX-5,4.8,-31.5);
+  const lof=sign('',{w:3.2,h:1.3,lines:['LOF','GALLERY'],font:'600 230px Mitr, sans-serif',color:'#ffffff',glow:2.2});
+  lof.position.set(FX+.03,5.6,-31.5);lof.rotation.y=-Math.PI/2;world.add(lof);
+}
+// further along the north side: older row-houses
+for(let z=-34;z>-80;z-=4.2) shophouse(FX,z-2.1,Math.PI,4.2,11,pick([3,3,4]),'beige');
+
+// ===================================================================
+// SOUTH ROW: old pink/beige 3-storey row-houses along the slanted line
+// plan:  x = 14.4 - 0.245 y   ->  three: x = 14.4 + 0.245 z
+// ===================================================================
+const ang=Math.atan(0.245),bay=4.1;
+for(let s=0;s<20;s++){
+  const zc=-(s*bay*Math.cos(ang))-bay/2;const xc=14.6+0.245*zc;
+  shophouse(xc,zc,ang,bay,11,pick([3,3,3,4]),'pink');
+}
+// trees in front of the old row
+function tree(x,z,s=1){
+  const t=new THREE.Mesh(new THREE.CylinderGeometry(.14*s,.22*s,3.2*s,7),std({color:0x3b2c22}));t.position.set(x,1.6*s,z);world.add(t);
+  const lm=std({color:0x1f3a22,emissive:0x050c06});
+  for(let i=0;i<5;i++){const b=new THREE.Mesh(new THREE.IcosahedronGeometry((1.1+rnd()*.7)*s,1),lm);b.position.set(x+(rnd()-.5)*1.8*s,(3.6+rnd()*1.4)*s,z+(rnd()-.5)*1.8*s);world.add(b)}
+}
+tree(14.5+0.245*-30-1.0,-30,1);tree(14.5+0.245*-44-1.0,-44,1.1);tree(14.5+0.245*-52-1.2,-52,.9);
+
+// motorbikes parked along the old row (simple silhouettes)
+function bike(x,z,ry){
+  const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=ry;world.add(g);
+  const body=std({color:pick([0x1b1b1f,0xe8e4dc,0x9a1f24,0x2a4f9a,0x22262c]),roughness:.4,metalness:.3});
+  const tire=std({color:0x0b0b0c});
+  const w1=new THREE.Mesh(new THREE.TorusGeometry(.26,.08,6,12),tire);w1.position.set(0,.3,.62);w1.rotation.y=Math.PI/2;g.add(w1);
+  const w2=w1.clone();w2.position.z=-.62;g.add(w2);
+  const b=new THREE.Mesh(new THREE.BoxGeometry(.38,.42,1.2),body);b.position.y=.62;g.add(b);
+  const h=new THREE.Mesh(new THREE.BoxGeometry(.7,.06,.06),tire);h.position.set(0,1.05,.55);g.add(h);
+}
+for(let z=-36;z>-62;z-=0.85){const x=14.4+0.245*z-1.6;bike(x,z,ang+Math.PI/2*0.9)}
+for(let z=-38;z>-60;z-=0.9){bike(FX+1.1,z,Math.PI/2)}
+
+// yellow-black barriers like the photos
+function barrier(x,z,ry,len=2.2){
+  const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=ry;world.add(g);
+  const C=document.createElement('canvas');C.width=128;C.height=8;const c=C.getContext('2d');for(let i=0;i<8;i++){c.fillStyle=i%2?'#151515':'#f0c419';c.fillRect(i*16,0,16,8)}
+  const m=std({map:tex(C),emissive:0x1a1400});
+  [0.45,.85].forEach(y=>{const r=new THREE.Mesh(new THREE.BoxGeometry(len,.07,.05),m);r.position.y=y;g.add(r)});
+  [-len/2,len/2].forEach(px=>{const p=new THREE.Mesh(new THREE.BoxGeometry(.06,.9,.06),m);p.position.set(px,.45,0);g.add(p)});
+}
+for(let z=-30;z>-60;z-=2.4)barrier(14.4+0.245*z-2.8,z-1.2,Math.PI/2+ang);
+
+// ===================================================================
+// ACROSS THE CROSS STREET: ศาลเจ้าพ่อเสือ (shrine) plan x 1.85..11.5, y -6.5..-21
+// ===================================================================
+{
+  const red=std({color:0xb3121a,emissive:0x3a0204,roughness:.6});
+  const gold=std({color:0xd9a530,emissive:0x4a2a00,metalness:.6,roughness:.4});
+  const roofM=std({color:0x2d6a4a,roughness:.6,emissive:0x061008});
+  const cream=std({color:0xe8dcc0});
+  const cx=6.7,cz=15;
+  // compound wall + gate facing the alley
+  box(9.6,1.4,.3,cream,cx,0.7,7.6);
+  const gate=new THREE.Group();gate.position.set(cx,0,7.6);world.add(gate);
+  [-1.6,1.6].forEach(x=>{const p=new THREE.Mesh(new THREE.BoxGeometry(.45,4.2,.45),red);p.position.set(x,2.1,0);gate.add(p)});
+  const beam=new THREE.Mesh(new THREE.BoxGeometry(4.4,.5,.6),red);beam.position.y=4.1;gate.add(beam);
+  const groof=new THREE.Mesh(new THREE.CylinderGeometry(.3,1.6,.9,4,1),roofM);groof.rotation.y=Math.PI/4;groof.scale.set(2.2,1,.55);groof.position.y=4.75;gate.add(groof);
+  const plaque=sign('',{w:1.6,h:.5,lines:['ศาลเจ้าพ่อเสือ'],font:'600 150px Mitr, sans-serif',color:'#ffd56a',glow:1.6,bg:'#7a0a10'});plaque.position.set(0,3.55,-.24);plaque.rotation.y=Math.PI;gate.add(plaque);
+  // main hall
+  box(8,3.6,7,red,cx,1.8,cz+1.5);
+  const hallFront=sign('',{w:7.6,h:3.2,bg:'#5a0a0c',lines:[''],glow:1});hallFront.position.set(cx,1.7,cz-2.02);hallFront.rotation.y=Math.PI;world.add(hallFront);
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(2.4,2.6),new THREE.MeshBasicMaterial({color:new THREE.Color(1.7,.85,.25)}));door.position.set(cx,1.35,cz-2.03);door.rotation.y=Math.PI;world.add(door);
+  for(let i=-3;i<=3;i+=2){const p=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,3.6,10),red);p.position.set(cx+i*1.25,1.8,cz-2.6);world.add(p)}
+  // two-tier curved roof (hip roof approximated, upturned ends via gold ridge)
+  const r1=new THREE.Mesh(new THREE.CylinderGeometry(.6,6.2,2.2,4,1),roofM);r1.rotation.y=Math.PI/4;r1.scale.set(1.25,1,.95);r1.position.set(cx,4.7,cz+1.2);world.add(r1);
+  const ridge=new THREE.Mesh(new THREE.BoxGeometry(6.4,.25,.3),gold);ridge.position.set(cx,5.85,cz+1.2);world.add(ridge);
+  [-1,1].forEach(sx=>{const d=new THREE.Mesh(new THREE.ConeGeometry(.25,1.1,6),gold);d.position.set(cx+sx*3.3,6.2,cz+1.2);d.rotation.z=-sx*.5;world.add(d)});
+  const pearl=new THREE.Mesh(new THREE.SphereGeometry(.3,12,8),new THREE.MeshBasicMaterial({color:new THREE.Color(2.5,1.6,.5)}));pearl.position.set(cx,6.3,cz+1.2);world.add(pearl);
+  // tall red flag pole as in the photo
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,8,8),red);pole.position.set(cx+3.6,4,9);world.add(pole);
+  // red lanterns strung across the gate and hall
+  const lanM=new THREE.MeshBasicMaterial({color:new THREE.Color(2.4,.35,.2)});
+  const lp=[];
+  for(let i=0;i<9;i++){const l=new THREE.Mesh(new THREE.SphereGeometry(.24,12,8),lanM);l.scale.y=1.25;l.position.set(cx-4+i,3.2+Math.sin(i/8*Math.PI)*-.35,9.2);world.add(l);lp.push(l.position.toArray())}
+  for(let i=0;i<5;i++){const l=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8),lanM);l.scale.y=1.25;l.position.set(cx-3+i*1.5,3.0,cz-2.8);world.add(l);lp.push(l.position.toArray())}
+  halos(lp,0xff4a2a,2.4,.9);halos([[cx,6.3,cz+1.2]],0xffb040,3,.9);
+  const sl=new THREE.PointLight(0xff5a3a,45,20,1.5);sl.position.set(cx,3.2,cz-4);world.add(sl);
+  const sl2=new THREE.PointLight(0xffa040,10,10,1.8);sl2.position.set(cx,2,cz-1.6);world.add(sl2);
+  // the big banyan in front of the shrine
+  const bt=new THREE.Mesh(new THREE.CylinderGeometry(.55,.85,4.5,9),std({color:0x3a2e26}));bt.position.set(cx-2.6,2.25,10.4);world.add(bt);
+  const lm=std({color:0x22432a,emissive:0x0a1609});
+  for(let i=0;i<10;i++){const b=new THREE.Mesh(new THREE.IcosahedronGeometry(2+rnd()*1.3,1),lm);b.position.set(cx-2.6+(rnd()-.5)*5,5.6+rnd()*2.4,10.4+(rnd()-.5)*4.5);world.add(b)}
+  const up=new THREE.SpotLight(0xffd59a,40,18,.7,.6,1.4);up.position.set(cx-2.6,.3,8.2);up.target.position.set(cx-2.6,7,10.4);world.add(up,up.target);
+}
+// buildings flanking the shrine
+for(let x=-3;x>-24;x-=4)shophouse(x,4.6,-Math.PI/2,4,12,3,'beige');
+for(let x=14.5;x<36;x+=4)shophouse(x,4.6,-Math.PI/2,4,12,pick([3,4]),'pink');
+
+// ===================================================================
+// BACKGROUND SKYLINE
+// ===================================================================
+// big glass tower right behind the shrine (photo 1)
+tower(7,58,34,30,155,{cols:14,rows:60,lit:.28,warm:.25,glass:true});
+tower(-10,40,18,16,62,{cols:8,rows:22,lit:.4,warm:.7}); // grey block in front of it
+// dark condo towers on the café side (photo 3)
+tower(-34,-6,22,18,118,{cols:10,rows:42,lit:.42,warm:.75});
+tower(-46,-78,20,20,96,{cols:9,rows:34,lit:.38,warm:.7});
+// crowned tower at the far east end of the alley (photo 2)
+tower(-16,-150,26,26,175,{cols:10,rows:56,lit:.32,warm:.5,crown:true});
+// mid-rise and far city ring
+for(let i=0;i<70;i++){
+  const a=rnd()*Math.PI*2,r=110+rnd()*220;const x=Math.cos(a)*r+5,z=Math.sin(a)*r-15;
+  if(Math.abs(x-7)<30&&Math.abs(z-58)<30)continue;
+  const h=rnd()<.25?60+rnd()*140:14+rnd()*40;
+  tower(x,z,12+rnd()*20,12+rnd()*20,h,{cols:6+Math.floor(rnd()*6),rows:Math.max(6,Math.floor(h/3.5)),lit:.2+rnd()*.35,warm:rnd(),glass:rnd()<.3,ry:rnd()*Math.PI});
+}
+// low filler blocks hugging the near neighbourhood so there are no gaps behind the rows
+for(let z=-4;z>-80;z-=9){tower(-18,z,8,8.5,6+rnd()*4,{lit:.4,warm:.85})}
+
+// ===================================================================
+// MARKET MODEL (from the STL) + string lights
+// ===================================================================
+const MAT={
+  canopy:std({color:0xf4efe6,roughness:.85,emissive:0x3a2c1e,side:THREE.DoubleSide}),
+  table:std({color:0x9a6b43,roughness:.7}),
+  pole:std({color:0x2b2d31,metalness:.6,roughness:.4}),
+  upper:std({color:0xefe9df,roughness:.85,emissive:0x2e2418,side:THREE.DoubleSide}),
+  wire:std({color:0x1c1d22,roughness:.6}),
+  goods:std({color:0xc9a27a,roughness:.75,emissive:0x140c06,side:THREE.DoubleSide}),
+  ground:std({color:0x0b0b0d,roughness:.95,side:THREE.DoubleSide}),
+};
+// subtle per-booth colour variety on goods
+MAT.goods.onBeforeCompile=sh=>{
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvWP=(modelMatrix*vec4(transformed,1.)).xyz;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vWP;\nvec3 pal(float t){return .55+.45*cos(6.2831*(t+vec3(0.,.33,.67)));}')
+    .replace('vec4 diffuseColor = vec4( diffuse, opacity );','float hh=fract(sin(dot(floor(vWP*1.6),vec3(12.9898,78.233,37.719)))*43758.5453);vec4 diffuseColor=vec4(mix(diffuse,pal(hh),.55),opacity);if(vWP.y<0.08)diffuseColor.rgb=vec3(.03);');
+};
+const bin=Uint8Array.from(atob(window.__GLB__),c=>c.charCodeAt(0)).buffer;
+new GLTFLoader().parse(bin,'',g=>{
+  Object.values(MAT).forEach(m=>{m.flatShading=true;m.needsUpdate=true});
+  g.scene.traverse(o=>{if(o.isMesh){const k=(o.name||'').replace(/_\d+$/,'');const key=Object.keys(MAT).find(n=>k.includes(n));o.material=MAT[key]||MAT.goods;}});
+  world.add(g.scene);document.getElementById('loading').hidden=true;
+},e=>{document.getElementById('loading').textContent='โหลดโมเดลไม่สำเร็จ: '+e.message});
+
+// bulbs as one instanced mesh, glowing through bloom
+{
+  const B=window.__BULBS__;
+  const im=new THREE.InstancedMesh(new THREE.SphereGeometry(.065,8,6),new THREE.MeshBasicMaterial({color:new THREE.Color(3.2,2.2,1.0)}),B.length);
+  const m=new THREE.Matrix4();B.forEach((p,i)=>{m.makeTranslation(p[0],p[1],p[2]);im.setMatrixAt(i,m)});world.add(im);
+  halos(B,0xffb45a,.9,.85);
+  // a handful of real lights spread across the strands
+  const picks=[];const sorted=[...B].sort((a,b)=>a[2]-b[2]);
+  for(let i=0;i<7;i++){picks.push(sorted[Math.floor((i+.5)/7*sorted.length)])}
+  picks.forEach(p=>{const l=new THREE.PointLight(0xffb866,22,13,1.4);l.position.set(p[0],p[1]-.2,p[2]);world.add(l)});
+}
+// warm booth work-lamps under the canopies
+[[1,-6],[1,-20],[9,-3],[5.5,-3],[8.5,-18],[6.5,5.3]].forEach(([x,z])=>{const l=new THREE.PointLight(0xffd8a0,14,8,1.5);l.position.set(x,2.1,z);world.add(l)});
+// DJ booth wash
+{const a=new THREE.PointLight(0xb04cff,18,12,1.5);a.position.set(1.5,3,-33);world.add(a);
+ const b=new THREE.PointLight(0x2fd0ff,14,12,1.5);b.position.set(4.5,3,-34);world.add(b);
+ const s=new THREE.SpotLight(0xff3ad0,40,26,.35,.5,1.2);s.position.set(3,6,-36);s.target.position.set(5,0,-26);world.add(s,s.target);djLights.push(a,b,s);}
+
+// ---------- zone labels ----------
+const labels=new THREE.Group();labels.visible=false;scene.add(labels);
+function label(text,x,y,z,col='#ffe6bd',size=1){
+  const C=document.createElement('canvas');const c=C.getContext('2d');c.font='600 64px Anuphan, sans-serif';const w=c.measureText(text).width+56;C.width=w;C.height=100;
+  const c2=C.getContext('2d');c2.fillStyle='rgba(12,14,30,.78)';c2.beginPath();c2.roundRect(4,4,w-8,92,20);c2.fill();c2.strokeStyle=col;c2.lineWidth=3;c2.stroke();
+  c2.font='600 64px Anuphan, sans-serif';c2.fillStyle=col;c2.textAlign='center';c2.textBaseline='middle';c2.fillText(text,w/2,54);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex(C),depthTest:false,transparent:true,sizeAttenuation:false}));s.scale.set(w/100*size*.042,.042*size,1);s.position.set(x,y,z);s.renderOrder=10;labels.add(s);
+}
+label('โซน F10–F22',.9,4.6,-14);label('โซน F01–F09',8,4.6,-17);label('F23–F26 · A01–A08',7,4.6,-3.5,'#fff36a');
+label('โซนที่นั่ง',5,2.6,-12,'#bfe8ff',.8);label('DJ',2.8,3.8,-33,'#e6b8ff');
+label('ศาลเจ้าพ่อเสือ',6.7,8.5,15,'#ffb4a6',1.2);
+label('ไป ถ.พระรามที่ 4',-28,2.2,2.25,'#d7dbe8',1.1);label('ไป ซ.จุฬาลงกรณ์ 50',36,2.2,2.25,'#d7dbe8',1.1);
+
+// ---------- post ----------
+const composer={render:()=>renderer.render(scene,camera),setSize(){}};
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);composer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()}
+addEventListener('resize',resize);resize();
+
+// ---------- camera views ----------
+const VIEWS={
+  over:{p:[-6,36,-58],t:[7,0,-4]},
+  shrine:{p:[4.6,1.7,-21],t:[6.3,3.4,12]},
+  dj:{p:[6.5,2,2.4],t:[3.5,2.4,-34]},
+  top:{p:[6,78,-8],t:[6,0,-10.5]},
+};
+let tween=null;
+function go(name,instant){const v=VIEWS[name];const p0=camera.position.clone(),t0=controls.target.clone();
+  const p1=new THREE.Vector3(...v.p),t1=new THREE.Vector3(...v.t);
+  if(instant||matchMedia('(prefers-reduced-motion: reduce)').matches){camera.position.copy(p1);controls.target.copy(t1);return}
+  tween={p0,t0,p1,t1,s:performance.now(),d:1600};
+  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===name))}
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));
+const tl=document.getElementById('t-labels');tl.onclick=()=>{labels.visible=!labels.visible;tl.setAttribute('aria-pressed',labels.visible)};
+const ts=document.getElementById('t-spin');ts.onclick=()=>{controls.autoRotate=!controls.autoRotate;controls.autoRotateSpeed=.6;ts.setAttribute('aria-pressed',controls.autoRotate)};
+halos(blinkers.map(b=>b.position.toArray()),0xff3020,9,.8);
+const startView=(location.hash||'').slice(1);go(VIEWS[startView]?startView:'over',true);
+if(VIEWS[startView])document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===startView));
+
+const clock=new THREE.Clock();
+renderer.setAnimationLoop(()=>{
+  const t=clock.getElapsedTime();
+  if(tween){const k=Math.min(1,(performance.now()-tween.s)/tween.d),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+    camera.position.lerpVectors(tween.p0,tween.p1,e);controls.target.lerpVectors(tween.t0,tween.t1,e);if(k>=1)tween=null}
+  blinkers.forEach((b,i)=>b.visible=Math.sin(t*2+i)>-.2);
+  if(djLights){djLights[0].intensity=14+8*Math.sin(t*3.1);djLights[1].intensity=10+8*Math.sin(t*2.3+1);djLights[2].target.position.x=5+3*Math.sin(t*.8)}
+  controls.update();composer.render();
+});
+// ===================================================================
+// BOOTH BOOKING: tags over every canopy, live status from db
+// positions are canopy centres from the plan (three x, z)
+// ===================================================================
+const CAT={F:{name:'งานคราฟท์ แฟชั่น',price:900,col:'#4fd8ec'},A:{name:'ร้านอาหารและเครื่องดื่ม',price:1200,col:'#ffd93b'}};
+const ZONES=[
+  {name:'แถวริมตึก (F10–F22)',ids:['F22','F21','F20','F19','F18','F17','F16','F15','F14','F13','F12','F11','F10'],
+   pos:[[.97,-.96],[.97,-2.88],[.97,-4.78],[.97,-6.7],[.98,-10.53],[.99,-12.43],[.99,-14.35],[.99,-16.33],[.99,-18.24],[1,-20.16],[.99,-22.07],[.99,-24.03],[1,-25.93]]},
+  {name:'แถวเฉียง (F01–F09)',ids:['F01','F02','F03','F04','F05','F06','F07','F08','F09'],
+   pos:[[10.1,-10.62],[9.64,-12.48],[9.17,-14.41],[8.72,-16.27],[8.29,-18.12],[7.82,-19.98],[7.37,-21.84],[6.91,-23.7],[6.47,-25.56]]},
+  {name:'บล็อกหน้าซอย (F23–F26)',ids:['F26','F25','F24','F23'],pos:[[5.7,-1.06],[5.47,-2.96],[5.26,-4.86],[5.03,-6.77]]},
+  {name:'อาหารและเครื่องดื่ม (A01–A08)',ids:['A05','A06','A07','A08','A01','A02','A03','A04'],
+   pos:[[7.53,-1.28],[7.31,-3.18],[7.09,-5.07],[6.87,-6.98],[12.37,-1.29],[11.92,-3.16],[11.47,-5.01],[11,-6.9]]},
+];
+const BOOTH={};
+ZONES.forEach(z=>{z.ids.forEach((id,i)=>BOOTH[id]={id,zone:z.name,cat:CAT[id[0]],x:z.pos[i][0],z:z.pos[i][1],status:'free',shop:''});z.ids=[...z.ids].sort()});
+const IDS=Object.keys(BOOTH);
+
+const tagGroup=new THREE.Group();scene.add(tagGroup);
+function tagCanvas(b){
+  const C=b.canvas||(b.canvas=document.createElement('canvas'));C.width=256;C.height=150;const c=C.getContext('2d');c.clearRect(0,0,256,150);
+  const col=b.status==='booked'?'#ff4d6d':'#36d97f';
+  c.fillStyle=col;c.beginPath();c.roundRect(10,8,236,100,26);c.fill();
+  c.beginPath();c.moveTo(108,106);c.lineTo(148,106);c.lineTo(128,140);c.closePath();c.fill();
+  if(b.sel){c.strokeStyle='#ffffff';c.lineWidth=8;c.beginPath();c.roundRect(10,8,236,100,26);c.stroke()}
+  c.fillStyle=b.status==='booked'?'#ffffff':'#06210f';c.font='700 64px Mitr, sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(b.id,128,60);
+  return C;
+}
+IDS.forEach(id=>{const b=BOOTH[id];
+  const t=new THREE.CanvasTexture(tagCanvas(b));t.colorSpace=THREE.SRGBColorSpace;b.tex=t;
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthTest:false,color:new THREE.Color(1.25,1.25,1.25)}));
+  s.scale.set(1.15,.67,1);s.position.set(b.x,3.85,b.z);s.renderOrder=20;s.userData.id=id;tagGroup.add(s);b.sprite=s;
+  // a little coloured light under each canopy so the booth itself reads as free/booked
+  const l=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0x36d97f,transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending}));
+  l.scale.set(2.6,2.6,1);l.position.set(b.x,2.55,b.z);tagGroup.add(l);b.light=l;
+});
+// tents turn pink once their booth is booked: canopy shaders look up the nearest booth
+const tentU={uB:{value:IDS.map(id=>new THREE.Vector2(BOOTH[id].x,BOOTH[id].z))},uS:{value:IDS.map(()=>0)}};
+[MAT.canopy,MAT.upper].forEach(m=>{m.onBeforeCompile=sh=>{
+  sh.uniforms.uB=tentU.uB;sh.uniforms.uS=tentU.uS;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vTW;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvTW=(modelMatrix*vec4(transformed,1.)).xyz;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vTW;\nuniform vec2 uB['+IDS.length+'];\nuniform float uS['+IDS.length+'];')
+    .replace('vec4 diffuseColor = vec4( diffuse, opacity );','vec4 diffuseColor = vec4( diffuse, opacity );float bk=0.;{float best=1e3;for(int i=0;i<'+IDS.length+';i++){vec2 d=abs(vTW.xz-uB[i]);float mm=max(d.x,d.y);if(mm<best){best=mm;bk=uS[i];}}if(best>1.45)bk=0.;}diffuseColor.rgb=mix(diffuseColor.rgb,vec3(1.,.24,.45),bk*.85);')
+    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance=mix(totalEmissiveRadiance,vec3(.45,.03,.12),bk);');
+};m.customProgramCacheKey=()=>'tentStatus';m.needsUpdate=true});
+function paint(id){const b=BOOTH[id];tagCanvas(b);b.tex.needsUpdate=true;b.light.material.color.set(b.status==='booked'?0xff4d6d:0x36d97f);tentU.uS.value[IDS.indexOf(id)]=b.status==='booked'?1:0}
+
+const $=s=>document.getElementById(s);
+let selected=null,canEdit=false,dbRef=null,artRef=null,lastSync=null;
+function counts(){const n=IDS.filter(i=>BOOTH[i].status==='booked').length;
+  $('cBooked').textContent=n;$('cFree').textContent=IDS.length-n;
+  $('evCount').textContent=`${IDS.length} ล็อก · ว่าง ${IDS.length-n} · จองแล้ว ${n}`}
+function renderList(){
+  $('listBody').innerHTML='';
+  ZONES.forEach(z=>{const h=document.createElement('h3');h.textContent=z.name;$('listBody').append(h);
+    const g=document.createElement('div');g.className='grid';
+    z.ids.forEach(id=>{const b=BOOTH[id];const e=document.createElement('button');e.className='bchip '+b.status;e.textContent=id;e.style.boxShadow='inset 0 -4px 0 '+b.cat.col;
+      e.title=b.status==='booked'?('จองแล้ว'+(b.shop?' · '+b.shop:'')):'ว่าง';
+      e.onclick=()=>{$('listSheet').hidden=true;tlist.setAttribute('aria-pressed',false);openBooth(id,true)};g.append(e)});
+    $('listBody').append(g)});
+}
+function applyStatus(id,data){const b=BOOTH[id];if(!b)return;
+  b.status=data&&data.status==='booked'?'booked':'free';b.shop=(data&&typeof data.shop==='string')?data.shop.slice(0,80):'';paint(id)}
+function refreshUI(){counts();renderList();if(selected)fillSheet(selected)}
+
+function fillSheet(id){const b=BOOTH[id];
+  $('bId').textContent=id;$('bZone').textContent=b.zone;
+  $('bBadge').className='badge '+b.status;$('bBadge').innerHTML='';
+  const d=document.createElement('i');d.className='dot '+b.status;$('bBadge').append(d,document.createTextNode(b.status==='booked'?'จองแล้ว':'ว่าง พร้อมให้จอง'));
+  $('bShop').textContent=b.status==='booked'&&b.shop?('ร้าน: '+b.shop):'';
+  {const P=$('bPrice');P.innerHTML='';const c=document.createElement('div');c.className='cat';const sw=document.createElement('i');sw.className='sw';sw.style.background=b.cat.col;c.append(sw,document.createTextNode(b.cat.name));
+   const a=document.createElement('div');a.className='amt';a.textContent=b.cat.price.toLocaleString('th-TH')+' บาท ';const sm=document.createElement('small');sm.textContent='/ 3 วัน (13–15 พ.ย.)';a.append(sm);
+   const sp=document.createElement('div');sp.className='spec';sp.textContent='ขนาดร้าน 2×2 เมตร · มีโต๊ะให้ 1.5 เมตร';P.append(c,a,sp)}
+  $('bContactLbl').textContent=b.status==='booked'?'ล็อกนี้เต็มแล้ว สนใจล็อกอื่น ติดต่อได้ที่':'สนใจจองล็อกนี้ ติดต่อได้ที่';
+}
+const draft={status:'free'};
+function setSeg(){document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.st===draft.status))}
+
+function openBooth(id,fly){
+  if(selected){BOOTH[selected].sel=false;paint(selected)}
+  selected=id;BOOTH[id].sel=true;paint(id);fillSheet(id);$('boothSheet').hidden=false;
+  if(fly){const b=BOOTH[id];VIEWS.__b={p:[b.x+(b.x<4?7:-7),10,b.z+11],t:[b.x,1.5,b.z]};go('__b')}
+}
+function closeBooth(){if(selected){BOOTH[selected].sel=false;paint(selected)}selected=null;$('boothSheet').hidden=true}
+$('closeBooth').onclick=closeBooth;
+
+
+// list sheet
+const tlist=$('t-list');
+tlist.onclick=()=>{const open=$('listSheet').hidden;$('listSheet').hidden=!open;tlist.setAttribute('aria-pressed',open)};
+// event sheet
+function setEvent(open){$('eventSheet').hidden=!open;$('scrim').hidden=!open;if(open)$('closeEvent').focus()}
+$('openEvent').onclick=()=>setEvent(true);$('closeEvent').onclick=()=>setEvent(false);$('scrim').onclick=()=>setEvent(false);
+addEventListener('keydown',e=>{if(e.key==='Escape'){setEvent(false);closeBooth()}});
+
+// click a tag in 3D (ignore drags)
+{const ray=new THREE.Raycaster(),v=new THREE.Vector2();let down=null;
+ renderer.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+ renderer.domElement.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;
+   const r=renderer.domElement.getBoundingClientRect();v.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
+   ray.setFromCamera(v,camera);const h=ray.intersectObjects(tagGroup.children.filter(o=>o.isSprite));
+   if(h.length)openBooth(h[0].object.userData.id,false)});
+}
+
+// live status from Supabase (read-only public key), snapshot file as fallback
+const SB='https://puzoqmxieeruzodhqkgj.supabase.co/rest/v1/booths?select=id,status,shop';
+const SBKEY='sb_publishable__UASavpEQhokHs6piru-Cg_B-A-KPWC';
+function applyRows(rows){rows.forEach(r=>{if(BOOTH[r.id])applyStatus(r.id,r)});refreshUI()}
+async function loadSnapshot(){try{const r=await fetch('data/booths.json',{cache:'no-store'});if(!r.ok)return;const j=await r.json();
+  if(j&&j.booths)applyRows(Object.keys(j.booths).map(id=>({id,...j.booths[id]})))}catch(e){}}
+let liveOk=false;
+async function loadLive(){try{const r=await fetch(SB,{headers:{apikey:SBKEY,Authorization:'Bearer '+SBKEY},cache:'no-store'});
+  if(!r.ok)throw 0;const rows=await r.json();if(Array.isArray(rows)){liveOk=true;applyRows(rows)}}catch(e){if(!liveOk)loadSnapshot()}}
+refreshUI();loadLive();setInterval(()=>{if(!document.hidden)loadLive()},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadLive()});
+window.__ready=true;
+</script>
+
+</body></html>
