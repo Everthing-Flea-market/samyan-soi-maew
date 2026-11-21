@@ -52,6 +52,7 @@
     <span><i class="sw" style="background:#CECBF6"></i>โซน B</span>
     <span><i class="sw" style="background:#85B7EB"></i>เวที</span>
     <span><i class="sw" style="background:#FAC775"></i>ลานคนดู</span>
+    <span><i class="sw" style="background:#854F0B"></i>ประตู</span>
     <span><i class="sw" style="background:#F0997B"></i>ร้านค้าเดิม</span>
     <span><i class="sw" style="background:#639922"></i>ทิศทางเดิน</span>
     <span><i class="sw" style="background:#E1F5EE"></i>ความกว้างทางเดิน (ซม.)</span>
@@ -59,7 +60,8 @@
   <ul class="notes">
     <li>ขนาดเวทีเป็นค่าประมาณ · บันไดเลื่อนเริ่มที่แนวเสา ยาวประมาณ 8.8 ม. (ตามที่ระบุในสเก็ตช์)</li>
     <li>แถบขวาล่างใช้ความกว้าง 3.9 ม. ตามที่วัดหน้างาน</li>
-    <li>B2 และ B6 มีเสาอยู่ด้านหลังร้าน แต่โต๊ะไม่ชนเสา · ล็อกโซน A ไม่ติดเสาเลย</li>
+    <li>B1 มีเสาอยู่ด้านหลังร้าน แต่โต๊ะไม่ชนเสา · ล็อกโซน A ไม่ติดเสาเลย</li>
+    <li>พื้นสีแดงริมผนังขวาคือหน้าประตู ห้ามวางของ (ตำแหน่งประตูโดยประมาณ)</li>
     <li>ทางเดินสีม่วง 280 ซม. เป็นค่าประมาณจากแบบ</li>
     <li>ในล็อกลึก 1.5 ม. วางโต๊ะลึก 60 ซม. แล้วเหลือที่ให้คนขายยืนด้านหลังประมาณ 90 ซม.</li>
   </ul>
@@ -155,6 +157,11 @@ function buildVariant(L){
     if(f=='+z')t=[x1,x2,z2-0.6,z2];if(f=='-z')t=[x1,x2,z1,z1+0.6];
     box(t[0]+0.04,t[1]-0.04,t[2]+0.04,t[3]-0.04,0.75,0xFFFFFF,0,varG);
     label(nm,(x1+x2)/2,1.4,(z1+z2)/2,0.5,zt[zn],'#FFFFFF',varG);
+  });
+  (L.doors||[]).forEach(d=>{
+    box(18.3,19.8,d[0],d[1],0.02,0xF09595,0.01,varG,0.55);
+    box(19.75,19.95,d[0],d[1],2.2,0x854F0B,0,varG);
+    label('ประตู',19.1,2.6,(d[0]+d[1])/2,0.6,'rgba(250,238,218,0.96)','#633806',varG);
   });
   L.paths.forEach(p=>path(p,varG));
   dims.remove(dims.getObjectByName('aisles'));const ag=new THREE.Group();ag.name='aisles';dims.add(ag);
