@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ผังล็อกร้านค้า 3D · แบบ 3 ลานหน้าเวทีกว้าง</title>
+<title>ผังล็อกร้านค้า 3D · ทางเดินวนรอบเกาะกลาง</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -35,14 +35,9 @@
 </head>
 <body>
 <main>
-  <h1>ผังล็อกร้านค้า 3D · แบบ 3 ลานหน้าเวทีกว้าง</h1>
+  <h1>ผังล็อกร้านค้า 3D · ทางเดินวนรอบเกาะกลาง</h1>
   <p class="sub">วางตามสเกลจริง · พื้นที่กว้าง 1980 ซม. · ล็อกหน้ากว้าง 1.8 ม. × ลึก 1.5 ม. · โต๊ะ 180 ซม. ล็อกละ 1 ตัว · ทางเดินแคบสุด 1.5 ม.</p>
-  <div class="stats">
-    <div class="stat"><div class="l">รวมทั้งหมด</div><div class="v" id="sT">–</div></div>
-    <div class="stat"><div class="l">A โซนซ้าย</div><div class="v" id="sA">–</div></div>
-    <div class="stat"><div class="l">B ใต้เวที</div><div class="v" id="sB">–</div></div>
-    <div class="stat"><div class="l">C ริมผนังขวา</div><div class="v" id="sC">–</div></div>
-  </div>
+  <div class="stats" id="stats"></div>
   <p id="note"></p>
   <div class="bar">
     <button class="v" onclick="setView('iso')">มุม 3D</button>
@@ -55,7 +50,6 @@
   <div class="legend">
     <span><i class="sw" style="background:#F7C1C1"></i>โซน A</span>
     <span><i class="sw" style="background:#CECBF6"></i>โซน B</span>
-    <span><i class="sw" style="background:#9FE1CB"></i>โซน C</span>
     <span><i class="sw" style="background:#85B7EB"></i>เวที</span>
     <span><i class="sw" style="background:#FAC775"></i>ลานคนดู</span>
     <span><i class="sw" style="background:#F0997B"></i>ร้านค้าเดิม</span>
@@ -65,7 +59,7 @@
   <ul class="notes">
     <li>ขนาดเวทีและตำแหน่งบันไดเลื่อนเป็นค่าประมาณ ยังไม่ได้วัดจริง</li>
     <li>แถบขวาล่างใช้ความกว้าง 3.9 ม. ตามที่วัดหน้างาน</li>
-    <li>C1 และ C5 มีเสาอยู่ด้านหลังร้าน แต่โต๊ะไม่ชนเสา</li>
+    <li>B2 และ B6 มีเสาอยู่ด้านหลังร้าน แต่โต๊ะไม่ชนเสา · ล็อกโซน A ไม่ติดเสาเลย</li>
     <li>ทางเดินสีม่วง 280 ซม. เป็นค่าประมาณจากแบบ</li>
     <li>ในล็อกลึก 1.5 ม. วางโต๊ะลึก 60 ซม. แล้วเหลือที่ให้คนขายยืนด้านหลังประมาณ 90 ซม.</li>
   </ul>
@@ -166,8 +160,9 @@ function buildVariant(L){
   dims.remove(dims.getObjectByName('aisles'));const ag=new THREE.Group();ag.name='aisles';dims.add(ag);
   (L.aisles||[]).forEach(a=>aisleDim(a[0],a[1],a[2],a[3],a[4],ag));
   const c={A:0,B:0,C:0};L.lots.forEach(l=>c[l[0][0]]++);
-  document.getElementById('sT').textContent=L.lots.length+' ล็อก';
-  document.getElementById('sA').textContent=c.A;document.getElementById('sB').textContent=c.B;document.getElementById('sC').textContent=c.C;
+  const zn=L.zones||{A:'A',B:'B',C:'C'};
+  document.getElementById('stats').innerHTML='<div class="stat"><div class="l">รวมทั้งหมด</div><div class="v">'+L.lots.length+' ล็อก</div></div>'+
+    Object.keys(zn).map(k=>'<div class="stat"><div class="l">'+zn[k]+'</div><div class="v">'+c[k]+'</div></div>').join('');
   document.getElementById('note').textContent=L.note;
 
 }
