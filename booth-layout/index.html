@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ผังล็อกร้านค้า 3D · 30 ล็อก (1.8 × 2 ม.)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#FAF9F5;--card:#FFFFFF;--muted:#F1EFE8;--text:#2C2C2A;--text2:#5F5E5A;--border:#D3D1C7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans Thai",Tahoma,sans-serif;line-height:1.6}
+  main{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+  h1{font-size:22px;font-weight:500;margin:0 0 4px}
+  .sub{color:var(--text2);font-size:14px;margin:0 0 16px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:0 0 14px}
+  .stat{background:var(--muted);border-radius:8px;padding:10px 12px}
+  .stat .l{font-size:13px;color:var(--text2)}
+  .stat .v{font-size:22px;font-weight:500}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
+  button{font:inherit;font-size:14px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--text)}
+  button:hover{background:var(--muted)}
+  label{font-size:14px;color:var(--text2);display:flex;gap:6px;align-items:center}
+  #wrap{width:100%;height:68vh;min-height:420px;border-radius:12px;background:var(--muted);overflow:hidden;touch-action:none}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin:12px 0 0}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;border:1px solid rgba(0,0,0,.15)}
+  .notes{font-size:14px;color:var(--text2);margin:16px 0 0;padding-left:18px}
+</style>
+</head>
+<body>
+<main>
+  <h1>ผังล็อกร้านค้า 3D · วางตามสเกลจริง</h1>
+  <p class="sub">พื้นที่กว้าง 1980 ซม. · ล็อกหน้ากว้าง 1.8 ม. × ลึก 2 ม. · โต๊ะ 180 ซม. ล็อกละ 1 ตัว · ทางเดินแคบสุด 1.5 ม.</p>
+  <div class="stats">
+    <div class="stat"><div class="l">รวมทั้งหมด</div><div class="v">30 ล็อก</div></div>
+    <div class="stat"><div class="l">A โซนซ้าย</div><div class="v">18</div></div>
+    <div class="stat"><div class="l">B ใต้เวที</div><div class="v">8</div></div>
+    <div class="stat"><div class="l">C ริมผนังขวา</div><div class="v">4</div></div>
+  </div>
+  <div class="bar">
+    <button onclick="setView('iso')">มุม 3D</button>
+    <button onclick="setView('top')">มุมบนตรง</button>
+    <button onclick="setView('side')">มุมเฉียงขวา</button>
+    <label><input type="checkbox" checked onchange="dims.visible=this.checked"> แสดงระยะ</label>
+    <span style="font-size:13px;color:var(--text2)">ลากเพื่อหมุน · เลื่อน/บีบเพื่อซูม · 1 ช่องกริด = 1 ม.</span>
+  </div>
+  <div id="wrap"></div>
+  <div class="legend">
+    <span><i class="sw" style="background:#F7C1C1"></i>โซน A</span>
+    <span><i class="sw" style="background:#CECBF6"></i>โซน B</span>
+    <span><i class="sw" style="background:#9FE1CB"></i>โซน C</span>
+    <span><i class="sw" style="background:#85B7EB"></i>เวที</span>
+    <span><i class="sw" style="background:#F0997B"></i>ร้านค้าเดิม</span>
+    <span><i class="sw" style="background:#639922"></i>ทิศทางเดิน</span>
+  </div>
+  <ul class="notes">
+    <li>ขนาดเวที (6 × 4 ม.) และตำแหน่งบันไดเลื่อนเป็นค่าประมาณ ยังไม่ได้วัดจริง</li>
+    <li>แถบขวาล่างใช้ความกว้าง 3.9 ม. ตามที่วัดหน้างาน</li>
+  </ul>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const wrap=document.getElementById('wrap');
+const W=()=>wrap.clientWidth,H=()=>wrap.clientHeight;
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setPixelRatio(window.devicePixelRatio||1);renderer.setSize(W(),H());wrap.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(38,W()/H(),0.1,500);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;
+scene.add(new THREE.AmbientLight(0xffffff,0.75));
+const sun=new THREE.DirectionalLight(0xffffff,0.55);sun.position.set(-10,30,25);scene.add(sun);
+const dims=new THREE.Group();scene.add(dims);
+const FONT='"Noto Sans Thai",Tahoma,sans-serif';
+function box(x1,x2,z1,z2,h,color,y0=0,par=scene){
+  const g=new THREE.BoxGeometry(x2-x1,h,z2-z1);
+  const b=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color}));b.position.set((x1+x2)/2,y0+h/2,(z1+z2)/2);par.add(b);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x333333,transparent:true,opacity:0.55}));e.position.copy(b.position);par.add(e);
+}
+function line(pts,color=0x333333,dashed=false,par=scene){
+  const g=new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(p[0],p[1],p[2])));
+  const l=new THREE.Line(g,dashed?new THREE.LineDashedMaterial({color,dashSize:0.3,gapSize:0.2}):new THREE.LineBasicMaterial({color}));
+  if(dashed)l.computeLineDistances();par.add(l);
+}
+function label(text,x,y,z,s=0.9,bg='rgba(255,255,255,0.92)',fg='#2C2C2A',par=scene){
+  const c=document.createElement('canvas'),ctx=c.getContext('2d');
+  const font='500 64px '+FONT;
+  ctx.font=font;const tw=ctx.measureText(text).width;c.width=Math.ceil(tw+48);c.height=100;
+  ctx.font=font;ctx.fillStyle=bg;const r=18,w=c.width,h=c.height;
+  ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(w-r,0);ctx.quadraticCurveTo(w,0,w,r);ctx.lineTo(w,h-r);ctx.quadraticCurveTo(w,h,w-r,h);ctx.lineTo(r,h);ctx.quadraticCurveTo(0,h,0,h-r);ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);ctx.fill();
+  ctx.fillStyle=fg;ctx.textBaseline='middle';ctx.fillText(text,24,h/2+4);
+  const t=new THREE.CanvasTexture(c);t.minFilter=THREE.LinearFilter;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false}));sp.scale.set(s*w/h,s,1);sp.position.set(x,y,z);sp.renderOrder=10;par.add(sp);
+}
+function dim(x1,z1,x2,z2,text){
+  const y=0.08;line([[x1,y,z1],[x2,y,z2]],0x993C1D,false,dims);
+  const dx=x2-x1,dz=z2-z1,L=Math.hypot(dx,dz),nx=-dz/L*0.25,nz=dx/L*0.25;
+  line([[x1-nx,y,z1-nz],[x1+nx,y,z1+nz]],0x993C1D,false,dims);line([[x2-nx,y,z2-nz],[x2+nx,y,z2+nz]],0x993C1D,false,dims);
+  label(text,(x1+x2)/2,0.6,(z1+z2)/2,0.6,'rgba(250,236,231,0.95)','#712B13',dims);
+}
+function path(pts){
+  const p=pts.map(q=>[q[0],0.12,q[1]]);line(p,0x3B6D11);
+  const a=p[p.length-2],b=p[p.length-1];
+  const d=new THREE.Vector3(b[0]-a[0],0,b[2]-a[2]).normalize();
+  scene.add(new THREE.ArrowHelper(d,new THREE.Vector3(b[0]-d.x*0.8,0.12,b[2]-d.z*0.8),0.8,0x639922,0.7,0.5));
+}
+function build(){
+  box(0,19.8,-3,21.6,0.02,0xF1EFE8,-0.02);
+  const grid=new THREE.GridHelper(26,26,0xB4B2A9,0xD3D1C7);grid.position.set(9.9,0.005,9.3);grid.material.transparent=true;grid.material.opacity=0.5;scene.add(grid);
+  line([[0,0.02,0],[0,0.02,21.6],[19.8,0.02,21.6],[19.8,0.02,0]],0x2C2C2A);
+  box(0,9.9,-3,0,3,0xF0997B);box(9.9,19.8,-3,0,3,0xF0997B);
+  label('Atongshop',4.95,3.6,-1.5,1);label('Popkingdom',14.85,3.6,-1.5,1);
+  box(0,19.8,1.8,10.8,0.02,0xFAECE7);box(15.9,19.8,10.8,21.6,0.02,0xFAECE7);
+  box(9.3,12.1,1.8,10.8,0.03,0xCECBF6);
+  label('ทางเดิน',10.7,0.7,6.0,0.7,'rgba(238,237,254,0.95)','#3C3489');
+  box(12.6,18.6,1.8,5.8,0.8,0x85B7EB);
+  label('Stage 6×4 ม.',15.6,2.1,3.8,0.9,'rgba(230,241,251,0.95)','#0C447C');
+  box(19.1,19.7,2.2,5.8,3,0xB5D4F4);
+  box(12.1,15.9,13.4,19.6,0.3,0xD3D1C7);
+  const ramp=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.12,6.2),new THREE.MeshLambertMaterial({color:0x888780}));ramp.position.set(14.0,2.2,16.5);ramp.rotation.x=-0.6;scene.add(ramp);
+  label('บันไดเลื่อน',14.0,4.5,16.5,0.8);
+  box(0,4.5,15.0,19.3,3,0xF0997B);box(4.5,9.0,15.0,19.3,3,0xF0997B);
+  label('4.0 collector toys',2.25,3.6,17.1,0.75);label('Dream toy',6.75,3.6,17.1,0.75);
+  line([[9.0,0.05,15.0],[10.8,0.05,15.0],[10.8,0.05,19.0],[9.0,0.05,19.0]],0x5F5E5A,true);
+  [[0,1.8],[8.7,1.8],[19.2,1.8],[0,10.8],[8.7,10.8],[19.2,10.8],[18.9,18.1]].forEach(p=>box(p[0],p[0]+0.6,p[1]-0.3,p[1]+0.3,4,0xFFFFFF));
+  const lots=[];let n=1;
+  [[0.6,2.6,'+x'],[4.1,6.1,'-x'],[6.1,8.1,'+x']].forEach(c=>{for(let k=0;k<6;k++)lots.push(['A'+(n++),c[0],c[1],1.8+1.8*k,3.6+1.8*k,c[2]]);});
+  n=1;for(let i=0;i<4;i++)lots.push(['B'+(n++),12.0+1.8*i,13.8+1.8*i,7.3,9.3,'-z']);
+  for(let i=0;i<4;i++)lots.push(['B'+(n++),12.0+1.8*i,13.8+1.8*i,9.3,11.3,'+z']);
+  n=1;[[11.3,13.1],[13.1,14.9],[14.9,16.7],[18.5,20.3]].forEach(z=>lots.push(['C'+(n++),17.8,19.8,z[0],z[1],'-x']));
+  const zc={A:0xF7C1C1,B:0xCECBF6,C:0x9FE1CB},zt={A:'rgba(163,45,45,0.92)',B:'rgba(83,74,183,0.92)',C:'rgba(15,110,86,0.92)'};
+  lots.forEach(l=>{
+    const [nm,x1,x2,z1,z2,f]=l,zn=nm[0];
+    box(x1+0.03,x2-0.03,z1+0.03,z2-0.03,0.04,zc[zn]);
+    let t;
+    if(f=='+x')t=[x2-0.6,x2,z1,z2];if(f=='-x')t=[x1,x1+0.6,z1,z2];
+    if(f=='+z')t=[x1,x2,z2-0.6,z2];if(f=='-z')t=[x1,x2,z1,z1+0.6];
+    box(t[0]+0.04,t[1]-0.04,t[2]+0.04,t[3]-0.04,0.75,0xFFFFFF);
+    label(nm,(x1+x2)/2,1.4,(z1+z2)/2,0.55,zt[zn],'#FFFFFF');
+  });
+  path([[3.35,12.4],[3.35,2.4]]);
+  path([[10.7,13.6],[10.7,2.4]]);
+  path([[16.85,20.8],[16.85,12.35],[12.4,12.35]]);
+  path([[11.2,13.8],[1.0,13.8]]);
+  path([[12.3,6.55],[18.8,6.55]]);
+  dim(0,1.2,9.0,1.2,'900 cm');dim(9.0,1.2,19.8,1.2,'1080 cm');
+  dim(-0.8,0,-0.8,1.8,'180 cm');dim(20.6,1.8,20.6,10.8,'900 cm');
+  dim(2.6,12.9,4.1,12.9,'150');dim(18.9,5.8,18.9,7.3,'150');
+  dim(-0.8,12.6,-0.8,15.0,'240');dim(15.9,21.2,19.8,21.2,'390 cm');
+  dim(0,22.4,19.8,22.4,'1980 cm');dim(-1.6,1.8,-1.6,3.6,'180');
+}
+const CX=9.9,CZ=9.3;
+const views={iso:[[CX,24,38],[CX,0,CZ]],top:[[CX,46,CZ+0.01],[CX,0,CZ]],side:[[34,22,30],[CX,0,CZ]]};
+function setView(v){camera.position.set(...views[v][0]);controls.target.set(...views[v][1]);controls.update();}
+(document.fonts&&document.fonts.load?document.fonts.load('500 64px "Noto Sans Thai"','ก'):Promise.resolve()).catch(()=>{}).then(()=>{build();setView('iso');});
+(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
+new ResizeObserver(()=>{renderer.setSize(W(),H());camera.aspect=W()/H();camera.updateProjectionMatrix();}).observe(wrap);
+</script>
+</body>
+</html>
