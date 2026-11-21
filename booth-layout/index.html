@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ผังล็อกร้านค้า 3D · เทียบ 4 แบบ (ล็อก 1.8 × 1.5 ม.)</title>
+<title>ผังล็อกร้านค้า 3D · แบบ 3 ลานหน้าเวทีกว้าง</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -35,13 +35,12 @@
 </head>
 <body>
 <main>
-  <h1>ผังล็อกร้านค้า 3D · เทียบ 4 แบบ</h1>
+  <h1>ผังล็อกร้านค้า 3D · แบบ 3 ลานหน้าเวทีกว้าง</h1>
   <p class="sub">วางตามสเกลจริง · พื้นที่กว้าง 1980 ซม. · ล็อกหน้ากว้าง 1.8 ม. × ลึก 1.5 ม. · โต๊ะ 180 ซม. ล็อกละ 1 ตัว · ทางเดินแคบสุด 1.5 ม.</p>
-  <div class="tabs" id="tabs"></div>
   <div class="stats">
     <div class="stat"><div class="l">รวมทั้งหมด</div><div class="v" id="sT">–</div></div>
     <div class="stat"><div class="l">A โซนซ้าย</div><div class="v" id="sA">–</div></div>
-    <div class="stat"><div class="l">B รอบเวที</div><div class="v" id="sB">–</div></div>
+    <div class="stat"><div class="l">B ใต้เวที</div><div class="v" id="sB">–</div></div>
     <div class="stat"><div class="l">C ริมผนังขวา</div><div class="v" id="sC">–</div></div>
   </div>
   <p id="note"></p>
@@ -49,7 +48,7 @@
     <button class="v" onclick="setView('iso')">มุม 3D</button>
     <button class="v" onclick="setView('top')">มุมบนตรง</button>
     <button class="v" onclick="setView('side')">มุมเฉียงขวา</button>
-    <label><input type="checkbox" checked onchange="dims.visible=this.checked"> แสดงระยะ</label>
+    <label><input type="checkbox" checked onchange="dims.visible=this.checked"> แสดงระยะ / ความกว้างทางเดิน</label>
     <span style="font-size:13px;color:var(--text2)">ลากเพื่อหมุน · เลื่อน/บีบเพื่อซูม · 1 ช่องกริด = 1 ม.</span>
   </div>
   <div id="wrap"></div>
@@ -61,11 +60,13 @@
     <span><i class="sw" style="background:#FAC775"></i>ลานคนดู</span>
     <span><i class="sw" style="background:#F0997B"></i>ร้านค้าเดิม</span>
     <span><i class="sw" style="background:#639922"></i>ทิศทางเดิน</span>
+    <span><i class="sw" style="background:#E1F5EE"></i>ความกว้างทางเดิน (ซม.)</span>
   </div>
   <ul class="notes">
     <li>ขนาดเวทีและตำแหน่งบันไดเลื่อนเป็นค่าประมาณ ยังไม่ได้วัดจริง</li>
     <li>แถบขวาล่างใช้ความกว้าง 3.9 ม. ตามที่วัดหน้างาน</li>
-    <li>บางล็อกมีเสาอยู่ด้านหลังร้าน แต่โต๊ะไม่ชนเสาในทุกแบบ</li>
+    <li>C1 และ C5 มีเสาอยู่ด้านหลังร้าน แต่โต๊ะไม่ชนเสา</li>
+    <li>ทางเดินสีม่วง 280 ซม. เป็นค่าประมาณจากแบบ</li>
     <li>ในล็อกลึก 1.5 ม. วางโต๊ะลึก 60 ซม. แล้วเหลือที่ให้คนขายยืนด้านหลังประมาณ 90 ซม.</li>
   </ul>
 </main>
@@ -111,6 +112,12 @@ function dim(x1,z1,x2,z2,text){
   line([[x1-nx,y,z1-nz],[x1+nx,y,z1+nz]],0x993C1D,false,dims);line([[x2-nx,y,z2-nz],[x2+nx,y,z2+nz]],0x993C1D,false,dims);
   label(text,(x1+x2)/2,0.6,(z1+z2)/2,0.6,'rgba(250,236,231,0.95)','#712B13',dims);
 }
+function aisleDim(x1,z1,x2,z2,text,par){
+  const y=0.1,col=0x0F6E56;line([[x1,y,z1],[x2,y,z2]],col,false,par);
+  const dx=x2-x1,dz=z2-z1,L=Math.hypot(dx,dz),nx=-dz/L*0.3,nz=dx/L*0.3;
+  line([[x1-nx,y,z1-nz],[x1+nx,y,z1+nz]],col,false,par);line([[x2-nx,y,z2-nz],[x2+nx,y,z2+nz]],col,false,par);
+  label(text+' ซม.',(x1+x2)/2,0.9,(z1+z2)/2,0.62,'rgba(225,245,238,0.96)','#04342C',par);
+}
 function path(pts,par){
   const p=pts.map(q=>[q[0],0.12,q[1]]);line(p,0x3B6D11,false,par);
   const a=p[p.length-2],b=p[p.length-1];
@@ -125,7 +132,7 @@ function buildStatic(){
   label('Atongshop',4.95,3.6,-1.5,1);label('Popkingdom',14.85,3.6,-1.5,1);
   box(0,19.8,1.8,10.8,0.02,0xFAECE7);box(15.9,19.8,10.8,21.6,0.02,0xFAECE7);
   box(9.3,12.1,1.8,10.8,0.03,0xCECBF6);
-  label('ทางเดิน',10.7,0.7,6.0,0.7,'rgba(238,237,254,0.95)','#3C3489');
+  label('ทางเดิน',10.7,0.7,4.0,0.7,'rgba(238,237,254,0.95)','#3C3489');
   box(12.1,15.9,13.4,19.6,0.3,0xD3D1C7);
   const ramp=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.12,6.2),new THREE.MeshLambertMaterial({color:0x888780}));ramp.position.set(14.0,2.2,16.5);ramp.rotation.x=-0.6;scene.add(ramp);
   label('บันไดเลื่อน',14.0,4.5,16.5,0.8);
@@ -145,7 +152,7 @@ function buildVariant(L){
   box(s.x1,s.x2,s.z1,s.z2,0.8,0x85B7EB,0,varG);
   label(s.label,(s.x1+s.x2)/2,2.1,(s.z1+s.z2)/2,0.9,'rgba(230,241,251,0.95)','#0C447C',varG);
   box(s.back[0],s.back[1],s.back[2],s.back[3],3,0xB5D4F4,0,varG);
-  if(L.crowd){const c=L.crowd;box(c[0],c[1],c[2],c[3],0.03,0xFAC775,0.01,varG,0.7);label('ลานคนดู',(c[0]+c[1])/2,0.8,(c[2]+c[3])/2,0.65,'rgba(250,238,218,0.95)','#633806',varG);}
+  if(L.crowd){const c=L.crowd;box(c[0],c[1],c[2],c[3],0.03,0xFAC775,0.01,varG,0.7);label('ลานคนดู',(c[0]+c[1])/2-1.2,0.8,(c[2]+c[3])/2,0.65,'rgba(250,238,218,0.95)','#633806',varG);}
   L.lots.forEach(l=>{
     const [nm,x1,x2,z1,z2,f]=l,zn=nm[0];
     box(x1+0.03,x2-0.03,z1+0.03,z2-0.03,0.04,zc[zn],0,varG);
@@ -156,25 +163,20 @@ function buildVariant(L){
     label(nm,(x1+x2)/2,1.4,(z1+z2)/2,0.5,zt[zn],'#FFFFFF',varG);
   });
   L.paths.forEach(p=>path(p,varG));
+  dims.remove(dims.getObjectByName('aisles'));const ag=new THREE.Group();ag.name='aisles';dims.add(ag);
+  (L.aisles||[]).forEach(a=>aisleDim(a[0],a[1],a[2],a[3],a[4],ag));
   const c={A:0,B:0,C:0};L.lots.forEach(l=>c[l[0][0]]++);
   document.getElementById('sT').textContent=L.lots.length+' ล็อก';
   document.getElementById('sA').textContent=c.A;document.getElementById('sB').textContent=c.B;document.getElementById('sC').textContent=c.C;
   document.getElementById('note').textContent=L.note;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.id===L.id));
+
 }
-const tabs=document.getElementById('tabs');
-BOOTH.LAYOUTS.forEach(L=>{
-  const b=document.createElement('button');b.className='tab';b.dataset.id=L.id;
-  b.innerHTML='<b>'+L.name+'</b><span>'+L.lots.length+' ล็อก</span>';
-  b.onclick=()=>{buildVariant(L);history.replaceState(null,'','#'+L.id);};tabs.appendChild(b);
-});
 const CX=9.9,CZ=9.3;
 const views={iso:[[CX,24,38],[CX,0,CZ]],top:[[CX,46,CZ+0.01],[CX,0,CZ]],side:[[34,22,30],[CX,0,CZ]]};
 function setView(v){camera.position.set(...views[v][0]);controls.target.set(...views[v][1]);controls.update();}
 (document.fonts&&document.fonts.load?document.fonts.load('500 64px "Noto Sans Thai"','ก'):Promise.resolve()).catch(()=>{}).then(()=>{
   buildStatic();
-  const start=BOOTH.LAYOUTS.find(L=>'#'+L.id===location.hash)||BOOTH.LAYOUTS[0];
-  buildVariant(start);setView('iso');
+  buildVariant(BOOTH.LAYOUTS[0]);setView('iso');
 });
 (function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
 new ResizeObserver(()=>{renderer.setSize(W(),H());camera.aspect=W()/H();camera.updateProjectionMatrix();}).observe(wrap);
