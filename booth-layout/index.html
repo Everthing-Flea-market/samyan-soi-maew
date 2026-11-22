@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ผังล็อกร้านค้า 3D · 2 บล็อกแนวตั้ง</title>
+<title>ผังล็อกร้านค้า 3D · เทียบ 2 แบบ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -35,8 +35,9 @@
 </head>
 <body>
 <main>
-  <h1>ผังล็อกร้านค้า 3D · 2 บล็อกแนวตั้ง</h1>
-  <p class="sub">วางตามสเกลจริง · พื้นที่กว้าง 1980 ซม. · ล็อกหน้ากว้าง 1.8 ม. × ลึก 1.5 ม. · โต๊ะ 180 ซม. ล็อกละ 1 ตัว · ทางเดินแคบสุด 1.5 ม.</p>
+  <h1>ผังล็อกร้านค้า 3D · เทียบ 2 แบบ</h1>
+  <p class="sub">วางตามสเกลจริง · พื้นที่กว้าง 1980 ซม. · ล็อกหน้ากว้าง 1.8 ม. × ลึก 1.5 ม. · โต๊ะ 180 ซม. ล็อกละ 1 ตัว · กดปุ่มด้านล่างเพื่อสลับแบบ</p>
+  <div class="tabs" id="tabs"></div>
   <div class="stats" id="stats"></div>
   <p id="note"></p>
   <div class="bar">
@@ -50,6 +51,7 @@
   <div class="legend">
     <span><i class="sw" style="background:#F7C1C1"></i>โซน A</span>
     <span><i class="sw" style="background:#CECBF6"></i>โซน B</span>
+    <span><i class="sw" style="background:#9FE1CB"></i>โซน C</span>
     <span><i class="sw" style="background:#85B7EB"></i>เวที</span>
     <span><i class="sw" style="background:#FAC775"></i>ลานคนดู</span>
     <span><i class="sw" style="background:#854F0B"></i>ประตู</span>
@@ -58,10 +60,10 @@
     <span><i class="sw" style="background:#E1F5EE"></i>ความกว้างทางเดิน (ซม.)</span>
   </div>
   <ul class="notes">
-    <li>ขนาดเวทีเป็นค่าประมาณ · บันไดเลื่อนเริ่มที่แนวเสา ยาวประมาณ 8.8 ม. (ตามที่ระบุในสเก็ตช์)</li>
+    <li>ขนาดเวทีเป็นค่าประมาณ · แบบ 1 ใช้บันไดเลื่อนที่เริ่มตั้งแต่แนวเสา (ยาวประมาณ 8.8 ม.) และเว้นหน้าประตู 2 จุด</li>
     <li>แถบขวาล่างใช้ความกว้าง 3.9 ม. ตามที่วัดหน้างาน</li>
-    <li>ล็อกโซน A ไม่ทับเสาเลย · B8 มีเสาอยู่ด้านหลังร้าน แต่โต๊ะไม่ชนเสา</li>
-    <li>ทางเดินริมผนังซ้ายกว้าง 120 ซม. แต่ตรงหัวและท้ายแถวที่มีเสา จะเหลือแค่ 60 ซม.</li>
+    <li>ทุกแบบ: ล็อกทับเสาได้เฉพาะด้านหลังร้าน โต๊ะไม่ชนเสา</li>
+    <li>แบบ 1: ทางเดินริมผนังซ้ายกว้าง 120 ซม. แต่ตรงหัวและท้ายแถวที่มีเสา จะเหลือแค่ 60 ซม.</li>
     <li>พื้นสีแดงริมผนังขวาคือหน้าประตู ห้ามวางของ (ตำแหน่งประตูโดยประมาณ)</li>
     <li>ทางเดินสีม่วง 280 ซม. เป็นค่าประมาณจากแบบ</li>
     <li>ในล็อกลึก 1.5 ม. วางโต๊ะลึก 60 ซม. แล้วเหลือที่ให้คนขายยืนด้านหลังประมาณ 90 ซม.</li>
@@ -130,9 +132,6 @@ function buildStatic(){
   box(0,19.8,1.8,10.8,0.02,0xFAECE7);box(15.9,19.8,10.8,21.6,0.02,0xFAECE7);
   box(9.3,12.1,1.8,10.8,0.03,0xCECBF6);
   label('ทางเดิน',10.7,0.7,4.0,0.7,'rgba(238,237,254,0.95)','#3C3489');
-  box(12.1,15.9,10.8,19.6,0.3,0xD3D1C7);
-  const ramp=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.12,8.2),new THREE.MeshLambertMaterial({color:0x888780}));ramp.position.set(14.0,2.4,15.2);ramp.rotation.x=-0.5;scene.add(ramp);
-  label('บันไดเลื่อน',14.0,5.0,15.2,0.8);
   box(0,4.5,15.0,19.3,3,0xF0997B);box(4.5,9.0,15.0,19.3,3,0xF0997B);
   label('4.0 collector toys',2.25,3.6,17.1,0.75);label('Dream toy',6.75,3.6,17.1,0.75);
   line([[9.0,0.05,15.0],[10.8,0.05,15.0],[10.8,0.05,19.0],[9.0,0.05,19.0]],0x5F5E5A,true);
@@ -145,6 +144,10 @@ function buildStatic(){
 const zc={A:0xF7C1C1,B:0xCECBF6,C:0x9FE1CB},zt={A:'rgba(163,45,45,0.92)',B:'rgba(83,74,183,0.92)',C:'rgba(15,110,86,0.92)'};
 function buildVariant(L){
   scene.remove(varG);varG=new THREE.Group();scene.add(varG);
+  const [e1,e2]=L.escalator||[10.8,19.6],em=(e1+e2)/2;
+  box(12.1,15.9,e1,e2,0.3,0xD3D1C7,0,varG);
+  const ramp=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.12,e2-e1-0.6),new THREE.MeshLambertMaterial({color:0x888780}));ramp.position.set(14.0,2.3,em);ramp.rotation.x=-0.5;varG.add(ramp);
+  label('บันไดเลื่อน',14.0,4.8,em,0.8,undefined,undefined,varG);
   const s=L.stage;
   box(s.x1,s.x2,s.z1,s.z2,0.8,0x85B7EB,0,varG);
   label(s.label,(s.x1+s.x2)/2,2.1,(s.z1+s.z2)/2,0.9,'rgba(230,241,251,0.95)','#0C447C',varG);
@@ -172,14 +175,21 @@ function buildVariant(L){
   document.getElementById('stats').innerHTML='<div class="stat"><div class="l">รวมทั้งหมด</div><div class="v">'+L.lots.length+' ล็อก</div></div>'+
     Object.keys(zn).map(k=>'<div class="stat"><div class="l">'+zn[k]+'</div><div class="v">'+c[k]+'</div></div>').join('');
   document.getElementById('note').textContent=L.note;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.id===L.id));
 
 }
+const tabs=document.getElementById('tabs');
+BOOTH.LAYOUTS.forEach(L=>{
+  const b=document.createElement('button');b.className='tab';b.dataset.id=L.id;
+  b.innerHTML='<b>'+L.name+'</b><span>'+L.lots.length+' ล็อก</span>';
+  b.onclick=()=>{buildVariant(L);history.replaceState(null,'','#'+L.id);};tabs.appendChild(b);
+});
 const CX=9.9,CZ=9.3;
 const views={iso:[[CX,24,38],[CX,0,CZ]],top:[[CX,46,CZ+0.01],[CX,0,CZ]],side:[[34,22,30],[CX,0,CZ]]};
 function setView(v){camera.position.set(...views[v][0]);controls.target.set(...views[v][1]);controls.update();}
 (document.fonts&&document.fonts.load?document.fonts.load('500 64px "Noto Sans Thai"','ก'):Promise.resolve()).catch(()=>{}).then(()=>{
   buildStatic();
-  buildVariant(BOOTH.LAYOUTS[0]);setView('iso');
+  buildVariant(BOOTH.LAYOUTS.find(L=>'#'+L.id===location.hash)||BOOTH.LAYOUTS[0]);setView('iso');
 });
 (function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
 new ResizeObserver(()=>{renderer.setSize(W(),H());camera.aspect=W()/H();camera.updateProjectionMatrix();}).observe(wrap);
