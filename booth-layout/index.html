@@ -45,6 +45,7 @@
     <button class="v" onclick="setView('top')">มุมบนตรง</button>
     <button class="v" onclick="setView('side')">มุมเฉียงขวา</button>
     <label><input type="checkbox" checked onchange="dims.visible=this.checked"> แสดงระยะ / ความกว้างทางเดิน</label>
+    <label><input type="checkbox" id="clean" onchange="setClean(this.checked)"> ซ่อนตัวเลขทั้งหมด (สำหรับแคปใส่ proposal)</label>
     <span style="font-size:13px;color:var(--text2)">ลากเพื่อหมุน · เลื่อน/บีบเพื่อซูม · 1 ช่องกริด = 1 ม.</span>
   </div>
   <div id="wrap"></div>
@@ -84,6 +85,7 @@ scene.add(new THREE.AmbientLight(0xffffff,0.75));
 const sun=new THREE.DirectionalLight(0xffffff,0.55);sun.position.set(-10,30,25);scene.add(sun);
 const dims=new THREE.Group();scene.add(dims);
 let varG=new THREE.Group();scene.add(varG);
+let grid,lotLabels=new THREE.Group();scene.add(lotLabels);
 const FONT='"Noto Sans Thai",Tahoma,sans-serif';
 function box(x1,x2,z1,z2,h,color,y0=0,par=scene,op=1){
   const g=new THREE.BoxGeometry(x2-x1,h,z2-z1);
@@ -125,7 +127,7 @@ function path(pts,par){
 }
 function buildStatic(){
   box(0,19.8,-3,21.6,0.02,0xF1EFE8,-0.02);
-  const grid=new THREE.GridHelper(26,26,0xB4B2A9,0xD3D1C7);grid.position.set(9.9,0.005,9.3);grid.material.transparent=true;grid.material.opacity=0.5;scene.add(grid);
+  grid=new THREE.GridHelper(26,26,0xB4B2A9,0xD3D1C7);grid.position.set(9.9,0.005,9.3);grid.material.transparent=true;grid.material.opacity=0.5;scene.add(grid);
   line([[0,0.02,0],[0,0.02,21.6],[19.8,0.02,21.6],[19.8,0.02,0]],0x2C2C2A);
   box(0,9.9,-3,0,3,0xF0997B);box(9.9,19.8,-3,0,3,0xF0997B);
   label('Atongshop',4.95,3.6,-1.5,1);label('Popkingdom',14.85,3.6,-1.5,1);
@@ -144,13 +146,16 @@ function buildStatic(){
 const zc={A:0xF7C1C1,B:0xCECBF6,C:0x9FE1CB},zt={A:'rgba(163,45,45,0.92)',B:'rgba(83,74,183,0.92)',C:'rgba(15,110,86,0.92)'};
 function buildVariant(L){
   scene.remove(varG);varG=new THREE.Group();scene.add(varG);
+  scene.remove(lotLabels);lotLabels=new THREE.Group();scene.add(lotLabels);lotLabels.visible=!CLEAN;
   const [e1,e2]=L.escalator||[10.8,19.6],em=(e1+e2)/2;
   box(12.1,15.9,e1,e2,0.3,0xD3D1C7,0,varG);
   const ramp=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.12,e2-e1-0.6),new THREE.MeshLambertMaterial({color:0x888780}));ramp.position.set(14.0,2.3,em);ramp.rotation.x=-0.5;varG.add(ramp);
   label('บันไดเลื่อน',14.0,4.8,em,0.8,undefined,undefined,varG);
   const s=L.stage;
   box(s.x1,s.x2,s.z1,s.z2,0.8,0x85B7EB,0,varG);
-  label(s.label,(s.x1+s.x2)/2,2.1,(s.z1+s.z2)/2,0.9,'rgba(230,241,251,0.95)','#0C447C',varG);
+  CUR=L;
+  label(CLEAN?'เวที':s.label,(s.x1+s.x2)/2,2.1,(s.z1+s.z2)/2,0.9,'rgba(230,241,251,0.95)','#0C447C',varG);
+  if(CLEAN)(L.zoneLabels||[]).forEach(z=>label(z[0],z[1],1.2,z[2],0.75,'rgba(255,255,255,0.95)','#993C1D',varG));
   box(s.back[0],s.back[1],s.back[2],s.back[3],3,0xB5D4F4,0,varG);
   if(L.crowd){const c=L.crowd;box(c[0],c[1],c[2],c[3],0.03,0xFAC775,0.01,varG,0.7);label('ลานคนดู',(c[0]+c[1])/2-1.2,0.8,(c[2]+c[3])/2,0.65,'rgba(250,238,218,0.95)','#633806',varG);}
   L.lots.forEach(l=>{
@@ -160,7 +165,7 @@ function buildVariant(L){
     if(f=='+x')t=[x2-0.6,x2,z1,z2];if(f=='-x')t=[x1,x1+0.6,z1,z2];
     if(f=='+z')t=[x1,x2,z2-0.6,z2];if(f=='-z')t=[x1,x2,z1,z1+0.6];
     box(t[0]+0.04,t[1]-0.04,t[2]+0.04,t[3]-0.04,0.75,0xFFFFFF,0,varG);
-    label(nm,(x1+x2)/2,1.4,(z1+z2)/2,0.5,zt[zn],'#FFFFFF',varG);
+    label(nm,(x1+x2)/2,1.4,(z1+z2)/2,0.5,zt[zn],'#FFFFFF',lotLabels);
   });
   (L.doors||[]).forEach(d=>{
     box(18.3,19.8,d[0],d[1],0.02,0xF09595,0.01,varG,0.55);
@@ -184,12 +189,15 @@ BOOTH.LAYOUTS.forEach(L=>{
   b.innerHTML='<b>'+L.name+'</b><span>'+L.lots.length+' ล็อก</span>';
   b.onclick=()=>{buildVariant(L);history.replaceState(null,'','#'+L.id);};tabs.appendChild(b);
 });
+let CLEAN=new URLSearchParams(location.search).has('clean'),CUR=null;
+function setClean(on,rebuild=true){CLEAN=on;dims.visible=!on;if(grid)grid.visible=!on;if(rebuild&&CUR)buildVariant(CUR);lotLabels.visible=!on;}
 const CX=9.9,CZ=9.3;
 const views={iso:[[CX,24,38],[CX,0,CZ]],top:[[CX,46,CZ+0.01],[CX,0,CZ]],side:[[34,22,30],[CX,0,CZ]]};
 function setView(v){camera.position.set(...views[v][0]);controls.target.set(...views[v][1]);controls.update();}
 (document.fonts&&document.fonts.load?document.fonts.load('500 64px "Noto Sans Thai"','ก'):Promise.resolve()).catch(()=>{}).then(()=>{
   buildStatic();
-  buildVariant(BOOTH.LAYOUTS.find(L=>'#'+L.id===location.hash)||BOOTH.LAYOUTS[0]);setView('iso');
+  if(CLEAN){document.getElementById('clean').checked=true;}
+  buildVariant(BOOTH.LAYOUTS.find(L=>'#'+L.id===location.hash)||BOOTH.LAYOUTS[0]);setClean(CLEAN,false);setView('iso');
 });
 (function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
 new ResizeObserver(()=>{renderer.setSize(W(),H());camera.aspect=W()/H();camera.updateProjectionMatrix();}).observe(wrap);
